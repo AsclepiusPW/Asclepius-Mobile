@@ -3,7 +3,8 @@ export const Themes = {
     
       //Cores padrões
       white:"#FFFFFF",
-      black: "#000000", 
+      black: "#000000",
+      bacgroundScreens: "#ECEBE8",
 
       //Verdes
       greenDark:"#2C6975",
