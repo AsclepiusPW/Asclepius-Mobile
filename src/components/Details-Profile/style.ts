@@ -24,13 +24,15 @@ export const styles = StyleSheet.create({
         marginBottom: 10,
         borderWidth: 3,
         borderColor: `${Themes.colors.white}`,
-        backgroundColor: `${Themes.colors.greenSpringTiny}`,
+        overflow: 'hidden',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 
     circleImage: {
-        maxHeight: 110,
-        maxWidth: 110,
-        borderRadius:100,
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover',
     },
     
     textDetails: {
