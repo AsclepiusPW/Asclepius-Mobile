@@ -1,6 +1,6 @@
 //Importações 
 import React, {useState, useEffect} from "react";
-import { View, Alert } from "react-native";
+import { View, Alert, StyleProp, ViewStyle } from "react-native";
 import MapView, {Marker} from "react-native-maps";
 import * as Location from 'expo-location';
 
@@ -11,10 +11,12 @@ import { styles } from "./style";
 interface props {
     latitude?: string,
     longitude?: string,
-    pattent?: string, //Se tem a possibilidade de reutiliza esse código estabelecendo uma nova estilização com novos valores
+    pattent?: keyof typeof styles, //Se tem a possibilidade de reutiliza esse código estabelecendo uma nova estilização com novos valores
 }
 
-export const PresentMap:React.FC<props> = ({latitude, longitude, pattent}) => {
+export const PresentMap:React.FC<props> = ({latitude, longitude, pattent = "container"}) => {
+    const mapStyle = styles[pattent] as StyleProp<ViewStyle>; //Estilização 
+    
     const [currentLocation, setCurrentLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 
     // Seria interresante adicionar uma função para listar no mapa do usuário
@@ -50,7 +52,7 @@ export const PresentMap:React.FC<props> = ({latitude, longitude, pattent}) => {
     };
     
     return(
-        <View style={styles.container}>
+        <View style={mapStyle}>
             <MapView 
                 style={styles.containerMapProfile}
                 region={mapRegion}
