@@ -20,7 +20,7 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{flex: 1, backgroundColor:`${Themes.colors.bacgroundScreens}`}}>
       <ThemeProvider theme={Themes}>
         <StatusBar
           backgroundColor="transparent"
