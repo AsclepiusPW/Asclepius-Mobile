@@ -3,6 +3,7 @@ import { TouchableOpacity, Text, StyleProp, ViewStyle } from "react-native";
 
 //Estilização
 import { styles } from "./style";
+import React from "react";
 
 //props
 /* Estilo do buttons:
