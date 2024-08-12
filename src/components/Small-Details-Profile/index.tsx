@@ -1,6 +1,7 @@
 //Importações
 import { View, Text, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import React from "react";
 
 //Estilização
 import { styles } from "./style";

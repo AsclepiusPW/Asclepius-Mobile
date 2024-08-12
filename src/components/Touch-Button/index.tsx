@@ -1,9 +1,9 @@
 //Importações
 import { TouchableOpacity, Text, StyleProp, ViewStyle } from "react-native";
+import React from "react";
 
 //Estilização
 import { styles } from "./style";
-import React from "react";
 
 //props
 /* Estilo do buttons:

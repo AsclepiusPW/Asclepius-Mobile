@@ -1,6 +1,7 @@
 //Importações
 import { useEffect, useState } from "react";
 import { View, TextInput, KeyboardTypeOptions, TouchableOpacity } from "react-native";
+import React from "react";
 
 //Icon
 import Icon from 'react-native-vector-icons/FontAwesome';

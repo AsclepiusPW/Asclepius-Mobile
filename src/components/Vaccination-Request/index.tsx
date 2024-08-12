@@ -1,5 +1,6 @@
 //Importações
 import { View, Text, TouchableOpacity } from "react-native";
+import React from "react";
 
 //Componentes
 import { ItemVaccinationRequest } from "../Item-Vaccination-Request";
