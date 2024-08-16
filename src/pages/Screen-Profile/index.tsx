@@ -1,5 +1,6 @@
 //Importações
 import { ScrollView, View, Text } from "react-native";
+import React from "react";
 
 //Componentes
 import { HeaderApresentation } from "../../components/Header-Apresentation"

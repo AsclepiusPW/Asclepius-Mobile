@@ -16,6 +16,7 @@ import { InputForm } from "../../components/Input-Form";
 //Estilização
 import { ContainerEditProfile, EditProfileHeader, EditProfileForm, ContainerButtonSubmmit } from "./style";
 import { Themes } from "../../../global/theme";
+import React from "react";
 
 //props
 interface props {
