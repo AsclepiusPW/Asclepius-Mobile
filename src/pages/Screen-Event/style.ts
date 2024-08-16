@@ -5,6 +5,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
   },
+  viewList: {
+    width: "100%",
+    height: "auto",
+    alignItems: "center",
+  },
 });
 
 export default styles;
