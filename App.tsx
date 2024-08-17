@@ -7,9 +7,6 @@ import React from "react";
 //Componentes
 import { Themes } from './global/theme';
 
-//Telas
-import { InitialScreen } from './src/pages/Screen-Initial';
-
 //Importação de fonts
 import useCustomFonts from "./global/useFonts";
 
@@ -28,7 +25,6 @@ export default function App() {
           backgroundColor="transparent"
           translucent
         />
-        <InitialScreen></InitialScreen>
       </ThemeProvider>
     </SafeAreaView>
   );
