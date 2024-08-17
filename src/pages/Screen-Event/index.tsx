@@ -1,5 +1,6 @@
 import { ActivityIndicator, ScrollView, View } from "react-native";
 import EventComponent from "../../components/Event-Component";
+import React from "react";
 import CalendarComponent from "../../components/Calendar-Component";
 import { HeaderApresentation } from "../../components/Header-Apresentation";
 import { useEffect, useState } from "react";
