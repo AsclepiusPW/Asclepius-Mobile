@@ -1,5 +1,6 @@
 //Importações
 import { View, Text, TouchableOpacity } from "react-native";
+import React from "react";
 
 //Icons
 import Icon from 'react-native-vector-icons/AntDesign';
@@ -9,6 +10,7 @@ import IconCalendar from 'react-native-vector-icons/FontAwesome5';
 //Estilizações
 import { styles } from "./style";
 import { Themes } from "../../../global/theme";
+
 
 //props
 interface props {
@@ -24,7 +26,6 @@ export const RegisterVaccination: React.FC<props> = ({ nameVaccina, dateVaccinat
             <View style={styles.containerHeader}>
                 <View style={styles.headerTitle}>
                     <IconTitle name="vaccines" size={28} color={`${Themes.colors.black}`} />
-
                     <Text style={styles.title}>{nameVaccina ? nameVaccina : "Nome da Vacina"}</Text>
                 </View>
 
@@ -34,7 +35,6 @@ export const RegisterVaccination: React.FC<props> = ({ nameVaccina, dateVaccinat
             </View>
 
             <View style={styles.containerList}>
-
                 <View style={styles.itemList}>
                     <View style={styles.headerTitle}>
                         <IconCalendar name="calendar-alt" size={20} color={`${Themes.colors.black}`} />

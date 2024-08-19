@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import React from "react";
 
 //Icones
 import Icon from 'react-native-vector-icons/Feather';

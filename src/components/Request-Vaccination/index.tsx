@@ -1,6 +1,7 @@
 //Importações
 import { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
+import React from "react";
 
 //Componentes
 import { PresentMap } from "../Present-Map";

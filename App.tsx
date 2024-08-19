@@ -2,11 +2,10 @@
 import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider } from 'styled-components';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import React from "react";
 
 //Componentes
 import { Themes } from './global/theme';
-
-//Telas
 
 //Importação de fonts
 import useCustomFonts from "./global/useFonts";

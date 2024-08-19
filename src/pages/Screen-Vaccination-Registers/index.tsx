@@ -1,6 +1,7 @@
 //Importações
 import { useEffect, useState } from "react";
 import { ScrollView, View, ActivityIndicator, Text  } from "react-native";
+import React from "react";
 
 //Componentes
 import { HeaderApresentation } from "../../components/Header-Apresentation";

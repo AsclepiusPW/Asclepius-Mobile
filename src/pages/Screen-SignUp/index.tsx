@@ -1,80 +1,69 @@
-//Importações
-import { useState } from "react";
-import { ScrollView, View, Text, Alert } from "react-native";
-import * as ImagePicker from 'expo-image-picker';
-
-//Validação de formulário
+// Imports
+import React from "react";
+import Yup from "yup";
+import * as Location from 'expo-location';
+import { View, Image, Alert, Text } from "react-native";
 import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { validationSchema } from "../../../global/validationForm";
+import { SignUpValidation } from "../../../global/validationForm";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useState, useEffect } from "react";
 
-//Componentes
-import { SmallDetailsProfile } from "../../components/Small-Details-Profile";
+// Components
 import { TouchButton } from "../../components/Touch-Button";
 import { InputForm } from "../../components/Input-Form";
 
-//Estilização
-import { ContainerEditProfile, EditProfileHeader, EditProfileForm, ContainerButtonSubmmit } from "./style";
+// Styles
+import { LoginButtonSubmit, ContainerLogin, LoginForm, SignUpText } from "./style";
+import AsclepiusLogo from "../../../images/logo-color-cropped.png";
 import { Themes } from "../../../global/theme";
-import React from "react";
 
-//props
-interface props {
-    userName?: string,
-    userEmail?: string,
-    userPhone?: string,
-    userPassword?: string,
-    userImage?: string,
-}
 
-export const ScreenEditProfile: React.FC<props> = ({ userName, userEmail, userPassword, userPhone, userImage }) => {
-    const [profileImage, setProfileImage] = useState<string | null>(null); //State para armazenar a aimagem
-    
-    //Validação do formulário
+
+
+export const ScreenSignUp = () => {
+
+    const [currentLocation, setCurrentLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+
     const { control, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
-            nameUser: userName || '',
-            emailUser: userEmail || '',
-            phoneUser: userPhone || '',
-            passwordUser: userPassword || '',
+            nameUser:  '',
+            emailUser:  '',
+            phoneUser:  '',
+            passwordUser: '',
         },
-        resolver: yupResolver(validationSchema),
+        resolver: yupResolver(SignUpValidation),
     });
 
-    //Função de enviar formulário
+
     const onSubmit = (data: any) => {
         Alert.alert('Formulário enviado com sucesso!', JSON.stringify(data));
+        console.log(currentLocation?.latitude, currentLocation?.longitude);
     };
 
-    //Função para pegar uma imagem do dispositivo
-    const handleSelectImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({ //Padrão da biblioteca, dúvida? Lê a documentação
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 4],
-            quality: 1,
-        });
+    useEffect(() => {
+        (async () => {
+            if (!currentLocation?.latitude || !currentLocation.longitude) {
+                // Solicitar permissão de localização
+                let { status } = await Location.requestForegroundPermissionsAsync();
+                if (status !== 'granted') {
+                    Alert.alert('Permissão negada', 'A permissão de localização é necessária para mostrar o mapa.');
+                    return;
+                }
 
-        if (!result.canceled && result.assets && result.assets.length > 0) {
-            setProfileImage(result.assets[0].uri); //Se for permitido eu realizo o set da imagem
-        } else if (result.canceled) {
-            Alert.alert('Seleção de imagem cancelada'); 
-        } else {
-            Alert.alert('Erro ao selecionar imagem');
-        }
-    };
+                // Obter a localização atual
+                let location = await Location.getCurrentPositionAsync({});
+                setCurrentLocation({
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                });
+            }
+        })();
+    }, [currentLocation?.latitude, currentLocation?.longitude]);
 
     return (
-        <ContainerEditProfile>
-
-            <EditProfileHeader>
-                <SmallDetailsProfile profileImage={profileImage} />
-
-                <TouchButton text="Editar imagem" styleType="buttonSmallSolid" onPress={handleSelectImage}/>
-            </EditProfileHeader>
-
-            <EditProfileForm>
-                <Controller
+        <ContainerLogin>
+            <LoginForm>
+            <Controller
                     control={control}
                     name="nameUser"
                     render={({ field: { onChange, onBlur, value } }) => (
@@ -137,10 +126,15 @@ export const ScreenEditProfile: React.FC<props> = ({ userName, userEmail, userPa
                 />
                 {errors.passwordUser && <Text style={{ color: `${Themes.colors.redHot}` }}>{errors.passwordUser.message}</Text>}
 
-                <ContainerButtonSubmmit>
-                    <TouchButton text="Editar" styleType="buttonLargerSolid" onPress={handleSubmit(onSubmit)} />
-                </ContainerButtonSubmmit>
-            </EditProfileForm>
-        </ContainerEditProfile>
-    )
+                <LoginButtonSubmit>
+                    <TouchButton
+                        styleType="buttonLargerSolid"
+                        text="Criar Conta"
+                        onPress={handleSubmit(onSubmit)}
+                    />
+                </LoginButtonSubmit>
+            </LoginForm>
+            <SignUpText>Já tem uma conta? Faça Log-In!</SignUpText>
+        </ContainerLogin>
+    );
 }

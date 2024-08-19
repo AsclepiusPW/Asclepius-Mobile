@@ -1,5 +1,6 @@
 //Importações
 import { View, Text } from "react-native";
+import React from "react";
 
 //Estlização
 import { styles } from "./style";
