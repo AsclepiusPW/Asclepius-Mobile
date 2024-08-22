@@ -12,13 +12,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     maxWidth: "90%",
-    flexWrap: "wrap",
   },
   subTitle: {
     fontSize: 14,
     fontWeight: "bold",
-    maxWidth: "90%",
-    flexWrap: "wrap",
   },
 });
 
