@@ -56,8 +56,18 @@ const ScreenDetailsVaccine = ({ vaccine }: prop) => {
             <PresentDetails
               description={arrayInfo.description}
               contraindications={arrayInfo.contraindications}
-              manufacturer={arrayInfo.manufacturer}
-              type={arrayInfo.type}
+              details={[
+                {
+                  iconName: "truck",
+                  label: "Fabricante",
+                  text: arrayInfo.manufacturer,
+                },
+                {
+                  iconName: "sliders-h",
+                  label: "Tipo",
+                  text: arrayInfo.type,
+                },
+              ]}
               title={arrayInfo.title}
             />
             <Text
