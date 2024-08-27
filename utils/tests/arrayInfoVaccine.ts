@@ -74,7 +74,7 @@ export const arrayInfoVaccines: infoVaccine[] = [
       "Indivíduos com alergia grave à gelatina, neomicina, ou aqueles que são imunocomprometidos, não devem receber esta vacina.",
     manufacturer: "Fundação Oswaldo Cruz (Fiocruz)",
     type: "Vacina tríplice viral",
-    title: "Sarampo, Caxumba e Rubéola",
+    title: "Sarampo",
     observations:
       "Parte do calendário vacinal infantil. Deve ser administrada em duas doses, a primeira aos 12 meses de idade.",
   },

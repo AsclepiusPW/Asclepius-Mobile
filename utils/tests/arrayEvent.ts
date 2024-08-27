@@ -42,7 +42,7 @@ export const arrayEvent: Event[] = [
     longitude: "-43.172896",
   },
   {
-    vacineName: "Sarampo, Caxumba e Rubéola",
+    vacineName: "Sarampo",
     localName: "Clínica da Família",
     dateEvent: "2024-08-29",
     vacancies: 40,
@@ -130,7 +130,7 @@ export const arrayEvent: Event[] = [
     longitude: "-51.217658",
   },
   {
-    vacineName: "Sarampo, Caxumba e Rubéola",
+    vacineName: "Sarampo",
     localName: "Centro de Saúde Leste",
     dateEvent: "2024-09-03",
     vacancies: 30,
@@ -234,7 +234,7 @@ export const arrayEvent: Event[] = [
     longitude: "-43.196400",
   },
   {
-    vacineName: "Sarampo, Caxumba e Rubéola",
+    vacineName: "Sarampo",
     localName: "Centro de Saúde Infantil",
     dateEvent: "2024-09-09",
     vacancies: 50,
