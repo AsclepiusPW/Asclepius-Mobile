@@ -14,7 +14,11 @@ export const styles = StyleSheet.create({
     height: "100%",
     borderRadius: 20,
   },
-
+  mapEventDetails: {
+    width: "95%",
+    borderRadius: 20,
+    overflow: "hidden",
+  },
   mapEvent: {
     width: 128,
     height: 128,
