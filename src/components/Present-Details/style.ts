@@ -31,9 +31,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: "rgba(255, 255, 255, 1)",
     width: "95%",
-    minHeight: "20%",
-    alignItems: "flex-start",
-
     borderRadius: 20,
   },
 });
