@@ -24,6 +24,16 @@ export const styles = StyleSheet.create({
         fontSize: 20,
         fontFamily: `${Themes.fonts.bold}`,
     },
+
+    textHomePage: {
+        fontSize: 20,
+        fontFamily: Themes.fonts.bold,
+        width: "60%",
+    },
+
+    textSpan: {
+        color: Themes.colors.white
+    },
     
     inputDev: {
         width: '100%',
