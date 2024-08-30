@@ -50,5 +50,26 @@ export const styles = StyleSheet.create({
     input: {
         width: '90%',
         paddingVertical: 8,
-    }
+    },
+
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    modalContent: {
+        width: '80%',
+        height: 410,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: Themes.colors.white,
+        padding: 20,
+        borderRadius: 10,
+    },
+    modalText: {
+        fontSize: 18,
+        marginBottom: 20,
+    },
 });

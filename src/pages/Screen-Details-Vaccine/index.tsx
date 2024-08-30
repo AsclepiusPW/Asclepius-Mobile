@@ -1,20 +1,27 @@
+//Imports
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, Text, View } from "react-native";
-import PresentDetails from "../../components/Present-Details";
-import styles from "./style";
-import EventComponent from "../../components/Event-Component";
-import { infoVaccine } from "../../../utils/types/typeInfoVaccine";
-import { arrayInfoVaccines } from "../../../utils/tests/arrayInfoVaccine";
-import { Themes } from "../../../global/theme";
-import { NoRecordView } from "../../components/No-Record-View";
+
+//Types
 import { arrayEvent } from "../../../utils/tests/arrayEvent";
 import { Event } from "../../../utils/types/typeEvent";
 
+//Styles
+import styles from "./style";
+import { Themes } from "../../../global/theme";
+
+//Components
+import EventComponent from "../../components/Event-Component";
+import PresentDetails from "../../components/Present-Details";
+import { infoVaccine } from "../../../utils/types/typeInfoVaccine";
+import { arrayInfoVaccines } from "../../../utils/tests/arrayInfoVaccine";
+import { NoRecordView } from "../../components/No-Record-View";
+
 type prop = {
-  vaccine: string;
+  vaccine?: string;
 };
 
-const ScreenDetailsVaccine = ({ vaccine }: prop) => {
+export const ScreenDetailsVaccine = ({ vaccine }: prop) => {
   const [arrayInfo, setArrayInfo] = useState<infoVaccine | undefined>();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -102,5 +109,3 @@ const ScreenDetailsVaccine = ({ vaccine }: prop) => {
     </ScrollView>
   );
 };
-
-export default ScreenDetailsVaccine;

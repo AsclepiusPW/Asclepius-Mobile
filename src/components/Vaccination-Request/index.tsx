@@ -1,6 +1,7 @@
 //Importações
-import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
+import { View, Text, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 //Componentes
 import { ItemVaccinationRequest } from "../Item-Vaccination-Request";
@@ -13,13 +14,16 @@ import { styles } from "./style";
 import { Themes } from "../../../global/theme";
 
 export const VaccinationRequest = () => {
+    //Const de navegação
+    const navigation = useNavigation();
+    
     return(
         <View style={styles.container}>
             <View style={styles.containerApresentation}>
                 <Text style={styles.apresentationText}>Solicitações de Vacinação</Text>
 
                 
-                <TouchableOpacity style={styles.buttonPress}>
+                <TouchableOpacity style={styles.buttonPress} onPress={() => navigation.navigate("VaccinationRequest")}>
                     <Text>Ver mais</Text>
                     <Icon name="pluscircleo" size={15} color={`${Themes.colors.black}`} />
                 </TouchableOpacity>

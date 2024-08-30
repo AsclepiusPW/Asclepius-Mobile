@@ -31,3 +31,7 @@ export const SignUpText = styled.Text`
     font-size: 14px;
     font-weight: ${Themes.fonts.regular};;
 `
+
+export const TouchSignUp = styled.Text`
+    color: ${Themes.colors.greenAcqua};
+`;

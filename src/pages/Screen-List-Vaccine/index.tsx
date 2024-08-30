@@ -9,7 +9,7 @@ import { arrayInfoVaccines } from "../../../utils/tests/arrayInfoVaccine";
 import { Themes } from "../../../global/theme";
 import { NoRecordView } from "../../components/No-Record-View";
 
-const ScreenListVaccine = () => {
+export const ScreenListVaccine = () => { //Refatorando importação
   const [infoVaccines, setInfoVaccines] =
     useState<infoVaccine[]>(arrayInfoVaccines);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -75,5 +75,3 @@ const ScreenListVaccine = () => {
     </ScrollView>
   );
 };
-
-export default ScreenListVaccine;

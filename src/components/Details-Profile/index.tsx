@@ -2,6 +2,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useNavigation } from "@react-navigation/native";
 
 //Componentes
 import { PresentInformation } from "../Present-Information";
@@ -23,6 +24,9 @@ interface props {
 }
 
 export const DetailsProfile: React.FC<props> = ({ userEmail, userName, userPhone, userImage }) => {
+    //Const de navigação
+    const navigation = useNavigation();
+    
     return (
         <View style={styles.container}>
             <LinearGradient
@@ -49,7 +53,7 @@ export const DetailsProfile: React.FC<props> = ({ userEmail, userName, userPhone
                 <View style={styles.informationProfileHeader}>
                     <Text style={styles.textHeader}>Detalhes de Pefil</Text>
 
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={()=> navigation.navigate("EditProfile")}>
                         <Icon name="settings" size={24} color={`${Themes.colors.black}`} />
                     </TouchableOpacity>
                 </View>

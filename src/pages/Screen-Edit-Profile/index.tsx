@@ -1,6 +1,6 @@
 //Importações
 import { useState } from "react";
-import { ScrollView, View, Text, Alert } from "react-native";
+import { ScrollView, View, Text, Alert, KeyboardAvoidingView, Platform } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 
 //Validação de formulário
@@ -12,6 +12,7 @@ import { validationSchema } from "../../../global/validationForm";
 import { SmallDetailsProfile } from "../../components/Small-Details-Profile";
 import { TouchButton } from "../../components/Touch-Button";
 import { InputForm } from "../../components/Input-Form";
+import { ModalComponent } from "../../components/Modal-Component";
 
 //Estilização
 import { ContainerEditProfile, EditProfileHeader, EditProfileForm, ContainerButtonSubmmit } from "./style";
@@ -29,7 +30,12 @@ interface props {
 
 export const ScreenEditProfile: React.FC<props> = ({ userName, userEmail, userPassword, userPhone, userImage }) => {
     const [profileImage, setProfileImage] = useState<string | null>(null); //State para armazenar a aimagem
-    
+    const [modalVisible, setModalVisible] = useState(false);
+
+    //Constantes para controle do modal
+    const handleOpenModal = () => setModalVisible(true); //Função para abrir o modal
+    const handleCloseModal = () => setModalVisible(false); //Função para fechar o modal
+
     //Validação do formulário
     const { control, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
@@ -41,9 +47,20 @@ export const ScreenEditProfile: React.FC<props> = ({ userName, userEmail, userPa
         resolver: yupResolver(validationSchema),
     });
 
-    //Função de enviar formulário
+    //Função de enviar formulário (modificar depois essa função)
     const onSubmit = (data: any) => {
-        Alert.alert('Formulário enviado com sucesso!', JSON.stringify(data));
+        Alert.alert(
+            'Formulário enviado com sucesso!',
+            JSON.stringify(data),
+            [
+                {
+                    text: 'OK',
+                    onPress: () => {
+                        handleOpenModal();
+                    }
+                }
+            ]
+        );
     };
 
     //Função para pegar uma imagem do dispositivo
@@ -58,89 +75,100 @@ export const ScreenEditProfile: React.FC<props> = ({ userName, userEmail, userPa
         if (!result.canceled && result.assets && result.assets.length > 0) {
             setProfileImage(result.assets[0].uri); //Se for permitido eu realizo o set da imagem
         } else if (result.canceled) {
-            Alert.alert('Seleção de imagem cancelada'); 
+            Alert.alert('Seleção de imagem cancelada');
         } else {
             Alert.alert('Erro ao selecionar imagem');
         }
     };
 
     return (
-        <ContainerEditProfile>
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            keyboardVerticalOffset={80} // Ajuste o valor conforme necessário
+        >
+            <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+                <ContainerEditProfile>
 
-            <EditProfileHeader>
-                <SmallDetailsProfile profileImage={profileImage} />
+                    <EditProfileHeader>
+                        <SmallDetailsProfile profileImage={profileImage} />
 
-                <TouchButton text="Editar imagem" styleType="buttonSmallSolid" onPress={handleSelectImage}/>
-            </EditProfileHeader>
+                        <TouchButton text="Editar imagem" styleType="buttonSmallSolid" onPress={handleSelectImage} />
+                    </EditProfileHeader>
 
-            <EditProfileForm>
-                <Controller
-                    control={control}
-                    name="nameUser"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <InputForm
-                            icon="user"
-                            placeholder="Nome de Usuário"
-                            value={value}
-                            onChangeText={onChange}
-                            onBlur={onBlur}
+                    <EditProfileForm>
+                        <Controller
+                            control={control}
+                            name="nameUser"
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <InputForm
+                                    icon="user"
+                                    placeholder="Nome de Usuário"
+                                    value={value}
+                                    onChangeText={onChange}
+                                    onBlur={onBlur}
+                                />
+                            )}
                         />
-                    )}
-                />
-                {errors.nameUser && <Text style={{ color: `${Themes.colors.redHot}` }}>{errors.nameUser.message}</Text>}
+                        {errors.nameUser && <Text style={{ color: `${Themes.colors.redHot}` }}>{errors.nameUser.message}</Text>}
 
-                <Controller
-                    control={control}
-                    name="emailUser"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <InputForm
-                            icon="envelope-o"
-                            placeholder="Email"
-                            value={value}
-                            onChangeText={onChange}
-                            onBlur={onBlur}
-                            keyboardType="email-address"
+                        <Controller
+                            control={control}
+                            name="emailUser"
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <InputForm
+                                    icon="envelope-o"
+                                    placeholder="Email"
+                                    value={value}
+                                    onChangeText={onChange}
+                                    onBlur={onBlur}
+                                    keyboardType="email-address"
+                                />
+                            )}
                         />
-                    )}
-                />
-                {errors.emailUser && <Text style={{ color: `${Themes.colors.redHot}` }}>{errors.emailUser.message}</Text>}
+                        {errors.emailUser && <Text style={{ color: `${Themes.colors.redHot}` }}>{errors.emailUser.message}</Text>}
 
-                <Controller
-                    control={control}
-                    name="phoneUser"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <InputForm
-                            icon="phone"
-                            placeholder="Telefone"
-                            value={value}
-                            onChangeText={onChange}
-                            onBlur={onBlur}
-                            keyboardType="phone-pad"
+                        <Controller
+                            control={control}
+                            name="phoneUser"
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <InputForm
+                                    icon="phone"
+                                    placeholder="Telefone"
+                                    value={value}
+                                    onChangeText={onChange}
+                                    onBlur={onBlur}
+                                    keyboardType="phone-pad"
+                                />
+                            )}
                         />
-                    )}
-                />
-                {errors.phoneUser && <Text style={{ color: `${Themes.colors.redHot}` }}>{errors.phoneUser.message}</Text>}
+                        {errors.phoneUser && <Text style={{ color: `${Themes.colors.redHot}` }}>{errors.phoneUser.message}</Text>}
 
-                <Controller
-                    control={control}
-                    name="passwordUser"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <InputForm
-                            icon="lock"
-                            placeholder="Senha"
-                            value={value}
-                            onChangeText={onChange}
-                            onBlur={onBlur}
-                            secureTextEntry={true}
+                        <Controller
+                            control={control}
+                            name="passwordUser"
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <InputForm
+                                    icon="lock"
+                                    placeholder="Senha"
+                                    value={value}
+                                    onChangeText={onChange}
+                                    onBlur={onBlur}
+                                    secureTextEntry={true}
+                                />
+                            )}
                         />
-                    )}
-                />
-                {errors.passwordUser && <Text style={{ color: `${Themes.colors.redHot}` }}>{errors.passwordUser.message}</Text>}
+                        {errors.passwordUser && <Text style={{ color: `${Themes.colors.redHot}` }}>{errors.passwordUser.message}</Text>}
 
-                <ContainerButtonSubmmit>
-                    <TouchButton text="Editar" styleType="buttonLargerSolid" onPress={handleSubmit(onSubmit)} />
-                </ContainerButtonSubmmit>
-            </EditProfileForm>
-        </ContainerEditProfile>
+                        <ContainerButtonSubmmit>
+                            <TouchButton text="Editar" styleType="buttonLargerSolid" onPress={handleSubmit(onSubmit)} />
+                        </ContainerButtonSubmmit>
+                    </EditProfileForm>
+
+                    {/* Modal para opções */}
+                    <ModalComponent visible={modalVisible} onClose={handleCloseModal} typeModal="successfulEdition" />
+                </ContainerEditProfile>
+            </ScrollView>
+        </KeyboardAvoidingView>
     )
 }
