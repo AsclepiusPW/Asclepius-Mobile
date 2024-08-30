@@ -1,23 +1,29 @@
+//Imports
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, View } from "react-native";
 
-import PresentDetails from "../../components/Present-Details";
+//Styles
 import styles from "./style";
 import { Themes } from "../../../global/theme";
-import { NoRecordView } from "../../components/No-Record-View";
+
+//Types
+import { arrayInfoVaccines } from "../../../utils/tests/arrayInfoVaccine";
 import { arrayEvent } from "../../../utils/tests/arrayEvent";
 import { Event } from "../../../utils/types/typeEvent";
-import { arrayInfoVaccines } from "../../../utils/tests/arrayInfoVaccine";
+
+//Components
+import PresentDetails from "../../components/Present-Details";
+import { NoRecordView } from "../../components/No-Record-View";
 import { PresentMap } from "../../components/Present-Map";
 import { infoVaccine } from "../../../utils/types/typeInfoVaccine";
 import EventComponent from "../../components/Event-Component";
 import { TouchButton } from "../../components/Touch-Button";
 
 type Prop = {
-  localName: string;
+  localName?: string;
 };
 
-const ScreenDetailsEvent = ({ localName }: Prop) => {
+export const ScreenDetailsEvent = ({ localName }: Prop) => {
   const formatDate = (dateString: string): string => {
     const [year, month, day] = dateString.split("-");
     return `${day}/${month}/${year}`;
@@ -135,5 +141,3 @@ const ScreenDetailsEvent = ({ localName }: Prop) => {
     </ScrollView>
   );
 };
-
-export default ScreenDetailsEvent;

@@ -26,7 +26,10 @@ export const ScreenProfile = () => {
                     userPhone="(00) 0 0000-0000"
                 />
 
-                <PresentMap />
+                <PresentMap 
+                    zoomEnable={false}
+                    scrollEnable={false}
+                />
 
                 <VaccinationRequest/>
             </ContainerProfile>

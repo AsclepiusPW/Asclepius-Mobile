@@ -1,29 +1,42 @@
 // Imports
-import React from "react";
+import React, {useState, useEffect} from "react";
 import Yup from "yup";
 import * as Location from 'expo-location';
 import { View, Image, Alert, Text } from "react-native";
-import { useForm, Controller } from 'react-hook-form';
+import { useNavigation } from "@react-navigation/native";
+
+//Validação
 import { SignUpValidation } from "../../../global/validationForm";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useState, useEffect } from "react";
+import { useForm, Controller } from 'react-hook-form';
 
 // Components
 import { TouchButton } from "../../components/Touch-Button";
 import { InputForm } from "../../components/Input-Form";
+import { ModalComponent } from "../../components/Modal-Component";
 
 // Styles
-import { LoginButtonSubmit, ContainerLogin, LoginForm, SignUpText } from "./style";
-import AsclepiusLogo from "../../../images/logo-color-cropped.png";
+import { LoginButtonSubmit, ContainerLogin, LoginForm, SignUpText, TouchLogin } from "./style";
 import { Themes } from "../../../global/theme";
 
-
+//Imagens
+import AsclepiusLogo from "../../../images/logo-color-cropped.png";
 
 
 export const ScreenSignUp = () => {
+    const [modalVisible, setModalVisible] = useState(false);
 
+    //Constantes para controle do modal
+    const handleOpenModal = () => setModalVisible(true); //Função para abrir o modal
+    const handleCloseModal = () => setModalVisible(false); //Função para fechar o modal
+
+    //Constante de navegação
+    const navigation = useNavigation();
+
+    //Pegando a localização automaticamente
     const [currentLocation, setCurrentLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 
+    //Validação do formulário
     const { control, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
             nameUser:  '',
@@ -34,12 +47,24 @@ export const ScreenSignUp = () => {
         resolver: yupResolver(SignUpValidation),
     });
 
-
+    //Submisao do formulário
     const onSubmit = (data: any) => {
-        Alert.alert('Formulário enviado com sucesso!', JSON.stringify(data));
+        Alert.alert(
+            'Formulário enviado com sucesso!',
+            JSON.stringify(data),
+            [
+                {
+                    text: 'OK',
+                    onPress: () => {
+                        handleOpenModal();
+                    }
+                }
+            ]
+        );
         console.log(currentLocation?.latitude, currentLocation?.longitude);
     };
 
+    //Pegar a latitude e longitude
     useEffect(() => {
         (async () => {
             if (!currentLocation?.latitude || !currentLocation.longitude) {
@@ -134,7 +159,14 @@ export const ScreenSignUp = () => {
                     />
                 </LoginButtonSubmit>
             </LoginForm>
-            <SignUpText>Já tem uma conta? Faça Log-In!</SignUpText>
+
+            <SignUpText>
+                Já tem uma conta?
+                <TouchLogin onPress={() => navigation.navigate("Login")}>Faça Log-In!</TouchLogin>
+            </SignUpText>
+            {/* Modal para opções */}
+            <ModalComponent visible={modalVisible} onClose={handleCloseModal} typeModal="autenticadedSucessfull" />
+        
         </ContainerLogin>
     );
 }

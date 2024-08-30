@@ -1,16 +1,22 @@
+//Imports
+import React, { useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, View } from "react-native";
+
+//Components
 import EventComponent from "../../components/Event-Component";
-import React from "react";
 import CalendarComponent from "../../components/Calendar-Component";
 import { HeaderApresentation } from "../../components/Header-Apresentation";
-import { useEffect, useState } from "react";
-import { Event } from "../../../utils/types/typeEvent";
-import { arrayEvent } from "../../../utils/tests/arrayEvent";
-import { Themes } from "../../../global/theme";
 import { NoRecordView } from "../../components/No-Record-View";
+
+//Styles
+import { Themes } from "../../../global/theme";
 import styles from "./style";
 
-const ScreenEvent = () => {
+//Types
+import { Event } from "../../../utils/types/typeEvent";
+import { arrayEvent } from "../../../utils/tests/arrayEvent";
+
+export const ScreenEvent = () => {
   const [event, setEvent] = useState<Event[]>(arrayEvent);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -87,5 +93,3 @@ const ScreenEvent = () => {
     </ScrollView>
   );
 };
-
-export default ScreenEvent;
