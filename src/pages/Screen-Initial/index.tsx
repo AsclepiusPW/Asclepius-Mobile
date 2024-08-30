@@ -1,9 +1,9 @@
 
 // Imports
 import React from "react";
-import { Image, View } from "react-native"
-import { ContainerInitialScreen, InitialTitle, Content, InitialText } from "./style"
-import AsclepiusLogo from "../../../images/logo-color-cropped.png"
+import { Image, View } from "react-native";
+import { ContainerInitialScreen, InitialTitle, Content, InitialText } from "./style";
+import AsclepiusLogo from "../../../images/logo-color-cropped.png";
 
 // Components
 import { TouchButton } from "../../components/Touch-Button";

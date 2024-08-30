@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider } from 'styled-components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React from "react";
+import { HomePage } from './src/pages/Screen-HomePage';
 
 //Componentes
 import { Themes } from './global/theme';
@@ -25,6 +26,7 @@ export default function App() {
           backgroundColor="transparent"
           translucent
         />
+        <HomePage/>
       </ThemeProvider>
     </SafeAreaView>
   );

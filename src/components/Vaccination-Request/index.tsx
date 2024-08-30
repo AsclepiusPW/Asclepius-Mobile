@@ -28,7 +28,7 @@ export const VaccinationRequest = () => {
             <View style={styles.latestRequestVacination}>
 
                 <ItemVaccinationRequest
-                    key="request one"
+                    // key="request one"
                     place="Hospital Arcanjo Gabriel"
                     data="02/ 08/ 2024"
                     responsible="Dr. Carlos Miguel"

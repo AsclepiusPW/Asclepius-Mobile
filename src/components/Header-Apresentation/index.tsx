@@ -16,11 +16,12 @@ interface props {
     title?: string,
     search?: boolean, //Se vai apresentar o input ou não
     placeholder?: string,
+    homePresentation?: boolean,
     changeSubmit?: (text: string) => void; //Modificar essa função para a realização da busca
 }
 
 //Header de apresentação com a possibilidade de apresentar o header com o input de pesquisa ou não
-export const HeaderApresentation: React.FC<props> = ({ title, search, placeholder, changeSubmit }) => {
+export const HeaderApresentation: React.FC<props> = ({ title, search, placeholder, homePresentation, changeSubmit }) => {
     const [inputValue, setInputValue] = useState("");
 
     const handleChangePress = () => {
@@ -37,9 +38,15 @@ export const HeaderApresentation: React.FC<props> = ({ title, search, placeholde
             style={styles.container}
         >
             <View style={styles.headerApresentation}>
-                <Text style={styles.text}>
-                    {title}
-                </Text>
+               {/* Atualização para a home page */}
+               {homePresentation ? ( 
+                    <Text style={styles.textHomePage}>
+                        Bem vindo ao <Text style={styles.textSpan}>Asclepius</Text>
+                    </Text>) : (
+                    <Text style={styles.text}>
+                        {title ? title : "Sem título"}
+                    </Text>
+                    )}
 
                 <TouchableOpacity>
                     <Icon name="settings" size={28} color={`${Themes.colors.black}`} />
