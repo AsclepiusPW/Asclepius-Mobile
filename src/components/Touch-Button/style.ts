@@ -12,6 +12,15 @@ export const styles = StyleSheet.create({
         justifyContent: 'center'
     },
 
+    buttonSmallClose: {
+        width: 150,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: `${Themes.colors.redHot}`,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+
     buttonLargerSolid: {
         width: 340,
         height: 50,
@@ -39,6 +48,6 @@ export const styles = StyleSheet.create({
     buttonTextOpacity: {
         fontFamily: `${Themes.fonts.bold}`,
         color: `${Themes.colors.greenDark}`,
-    }
+    },
 
 });

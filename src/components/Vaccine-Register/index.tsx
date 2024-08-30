@@ -1,12 +1,22 @@
-import { View } from "react-native";
-import styles from "./style";
-import Icon from "react-native-vector-icons/FontAwesome5";
-import VaccineInformation from "../Vaccine-Information";
+//Imports
+import React from "react";
+import { View, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+
+//Types
 import { infoVaccine } from "../../../utils/types/typeInfoVaccine";
 
+//Styles
+import styles from "./style";
+import VaccineInformation from "../Vaccine-Information";
+import Icon from "react-native-vector-icons/FontAwesome5";
+
 const VaccineRegister = ({ manufacturer, type, title }: infoVaccine) => {
+  //Const navegação
+  const navigation = useNavigation();
+
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={() =>navigation.navigate("DetailsVaccine")}>
       <View style={styles.styledViewIcon}>
         <Icon style={styles.styledIcon} size={64} name="syringe" />
       </View>
@@ -17,7 +27,7 @@ const VaccineRegister = ({ manufacturer, type, title }: infoVaccine) => {
           type={type}
         />
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

@@ -43,6 +43,8 @@ export const RequestVaccination: React.FC<VaccinationRequest> = ({ dateEvent, da
                 <PresentMap
                     latitude={latitude}
                     longitude={longitude}
+                    scrollEnable={false}
+                    zoomEnable={false}
                     pattent="containerMediumPattent"
                 />
             </View>

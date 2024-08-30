@@ -1,6 +1,7 @@
 //Importações
 import React, { useState } from "react";
 import { ScrollView, View, Text, TouchableOpacity, Alert, FlatList, Dimensions } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 //Components
 import CalendarComponent from "../../components/Calendar-Component";
@@ -16,6 +17,9 @@ import { Themes } from "../../../global/theme";
 import { arrayEvent } from "../../../utils/tests/arrayEvent";
 
 export const HomeCalendarComponent = () => {
+    //Constante de navegação
+    const navigation = useNavigation();
+
     const [dateEvent, setDateEvent] = useState<string[]>(
         arrayEvent.map((event) => event.dateEvent)
     );
@@ -25,7 +29,7 @@ export const HomeCalendarComponent = () => {
             <ListTitle>
                 <Title>Calendário</Title>
 
-                <ButtonPress>
+                <ButtonPress onPress={ () => navigation.navigate("ListEvents")}>
                     <Text>Ver mais</Text>
                     <Icon name="pluscircleo" size={15} color={`${Themes.colors.black}`} />
                 </ButtonPress>

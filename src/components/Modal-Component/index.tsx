@@ -66,7 +66,7 @@ export const ModalComponent: React.FC<CustomModalProps> = ({ visible, typeModal,
                         <View style={styles.modalViewChoises}>
                             <TouchButton styleType='buttonSmallSolid' text='Continue' onPress={() => {
                                 onClose();
-                                navigation.navigate('Home'); // Navega para a página inicial
+                                navigation.navigate('TabNaviagtion'); // Navega para a página inicial
                             }} />
                         </View>
                     </>
