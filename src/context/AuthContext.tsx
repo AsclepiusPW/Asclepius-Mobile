@@ -1,0 +1,110 @@
+//Arquivo de configuração do contexto de autenticação
+
+//Importações
+import React, { createContext, useContext, useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+//API
+import { Api } from "../connection/axios";
+import { AxiosError } from "axios";
+
+//Definição do contexto
+interface AuthContextData {
+    isAuthenticated: boolean;
+    user: string | null;
+    token: string | null;
+    signIn(data: { userEmail: string; userPassword: string }): Promise<void>;
+    signOut(): void;
+};
+
+//Criando o contexto
+const AuthContext = createContext<AuthContextData>({} as AuthContextData);
+
+//Props
+interface propsContext {
+    children: React.ReactNode;
+}
+
+//Provedor do contexto
+export const AuthProvider: React.FC<propsContext> = ({children}) => {
+    const [user, setUser] = useState<string | null>(null);
+    const [token, setToken] = useState<string | null>(null);
+    const isAuthenticated = !!user;
+
+    useEffect(()=> {
+        //Buscar o token no AsyncStorage quando o APP for iniciado
+        const loadStorageData = async () => {
+            const storedToken = await AsyncStorage.getItem('@user_token');
+            const storedUser = await AsyncStorage.getItem('@user_name');
+
+            if (storedToken && storedUser) {
+                setToken(storedToken);
+                setUser(storedUser);
+
+                Api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+            }
+        }
+
+        loadStorageData();
+    }, []);
+
+    //Função de login
+    const signIn = async (data: { userEmail: string; userPassword: string })=> {
+        try {
+            const response = await Api.post('/user/authentication', {
+                email: data.userEmail,
+                password: data.userPassword,
+            });
+
+            const {token} = response.data;
+            const userName = response.data.user?.name;
+
+            await AsyncStorage.setItem('@user_token', token);
+            await AsyncStorage.setItem('@user_name', userName);
+
+            setToken(token);
+            setUser(userName);
+
+            Api.defaults.headers.common['Authorization'] = `Bearer ${token}`;            
+
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                if (error.response) {
+                    // Erro de resposta do servidor
+                    console.error("Erro do servidor:", error.response.data);
+                    throw new Error(error.response.data.message || 'Erro ao realizar a autenticação');
+                } else if (error.request) {
+                    // Erro de rede
+                    console.error("Erro de rede:", error.request);
+                    throw new Error('Erro de rede ao realizar a autenticação');
+                } else {
+                    // Erro desconhecido
+                    console.error("Erro desconhecido:", error.message);
+                    throw new Error('Erro desconhecido ao realizar a autenticação');
+                }
+            }
+        }
+    };
+
+    //Função de sair
+    const signOut = async () => {
+        await AsyncStorage.removeItem('@user_token');
+        await AsyncStorage.removeItem('@user_name');
+
+        setToken(null);
+        setUser(null);
+
+        delete Api.defaults.headers.common['Authorization'];
+    };
+
+    return (
+        <AuthContext.Provider value={{isAuthenticated, signIn, signOut, token, user}}>
+            {children}
+        </AuthContext.Provider>
+    )
+}
+
+// Hook para acessar o contexto
+export const useAuth = () => {
+    return useContext(AuthContext);
+};
