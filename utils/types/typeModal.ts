@@ -1,0 +1,1 @@
+export type ModalType = 'autenticadedSucessfull' | 'autenticadedFallied' | 'modalInformation' | 'successfulEdition' | 'faliedEdition';
