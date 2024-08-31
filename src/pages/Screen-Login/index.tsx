@@ -1,8 +1,11 @@
 // Imports
 import React, {useState} from "react";
 import Yup from "yup";
-import { View, Image, Alert, Text } from "react-native";
+import { View, Image, Alert, Text, ActivityIndicator } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+
+//Context
+import { useAuth } from "../../context/AuthContext"; 
 
 //Validation
 import { LoginValidationSchema } from "../../../global/validationForm";
@@ -21,9 +24,15 @@ import { Themes } from "../../../global/theme";
 //Imagens
 import AsclepiusLogo from "../../../images/logo-color-cropped.png";
 
+//Types
+import { ModalType } from "../../../utils/types/typeModal";
 
 export const ScreenLogin = () => {
+    const {signIn} = useAuth(); //Context
+
+    const [loading, setLoading] = useState<boolean>(false);
     const [modalVisible, setModalVisible] = useState(false);
+    const [modalType, setModalType] = useState<ModalType>('autenticadedSucessfull'); // Estado para o tipo do modal
 
     //Constantes para controle do modal
     const handleOpenModal = () => setModalVisible(true); //Função para abrir o modal
@@ -42,24 +51,26 @@ export const ScreenLogin = () => {
     });
 
     //Função de submisão de formulário
-    const onSubmit = (data: any) => {
-        Alert.alert(
-            'Formulário enviado com sucesso!',
-            JSON.stringify(data),
-            [
-                {
-                    text: 'OK',
-                    onPress: () => {
-                        handleOpenModal();
-                    }
-                }
-            ]
-        ); //Após a validação e o envio da função, o app leva para a home
+    const onSubmit = async (data: {userEmail: string, userPassword: string}) => {
+        setLoading(true); //Carregar
+        try {
+            await signIn(data); //// Chama a função signIn do contexto de autenticação
+            setModalType("autenticadedSucessfull"); // Define o tipo de modal para sucesso
+        } catch (error) {
+            // Exibe um alerta em caso de falha
+            setModalType('autenticadedFallied'); // Define o tipo de modal para falha
+            console.log(error);
+        }finally {
+            handleOpenModal();
+            setLoading(false);
+        }
     };
 
     return (
         <ContainerLogin>
             <Image source={AsclepiusLogo} style={{ width: "80%", resizeMode: "contain" }} />
+
+            {loading && <ActivityIndicator size="large" color={`${Themes.colors.greenDark}`}/>}
 
             <LoginForm>
                 <Controller
@@ -109,7 +120,7 @@ export const ScreenLogin = () => {
             </SignUpText>
 
             {/* Modal para opções */}
-            <ModalComponent visible={modalVisible} onClose={handleCloseModal} typeModal="autenticadedSucessfull" />
+            <ModalComponent visible={modalVisible} onClose={handleCloseModal} typeModal={modalType} />
         </ContainerLogin>
     );
 }
