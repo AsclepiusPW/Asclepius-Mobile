@@ -3,6 +3,9 @@ import React from 'react';
 import { View, Text, Modal, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
+//Contexto
+import { useAuth } from '../../context/AuthContext';
+
 // Componentes
 import { TouchButton } from '../Touch-Button';
 
@@ -14,15 +17,16 @@ import { styles } from "./style";
 import Icon from 'react-native-vector-icons/AntDesign';
 
 // Props
-type ModalType = 'autenticadedSucessfull' | 'autenticadedFallied' | 'modalInformation' | 'successfulEdition' | 'faliedEdition';
-
+import { ModalType } from '../../../utils/types/typeModal'; //Importando tipo, presente em utils/types
 interface CustomModalProps {
     visible: boolean;
     typeModal: ModalType;
     onClose: () => void;
+    onModalClose?: () => void;
 }
 
-export const ModalComponent: React.FC<CustomModalProps> = ({ visible, typeModal, onClose }) => {
+export const ModalComponent: React.FC<CustomModalProps> = ({ visible, typeModal, onClose, onModalClose }) => {
+    const {signOut} = useAuth();
     const navigation = useNavigation();
 
     const handleEditProfile = () => {
@@ -30,11 +34,9 @@ export const ModalComponent: React.FC<CustomModalProps> = ({ visible, typeModal,
         navigation.navigate('EditProfile');
     };
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         onClose();
-        navigation.navigate("Initial"); //Leva para a tela inical
-        // Adicione a lógica para sair do sistema aqui
-        // Exemplo: Clear authentication tokens, navigate to login screen, etc.
+        await signOut();
     };
 
     //Função para controle do icon
@@ -124,7 +126,10 @@ export const ModalComponent: React.FC<CustomModalProps> = ({ visible, typeModal,
             visible={visible}
             transparent={true}
             animationType="slide"
-            onRequestClose={onClose}
+            onRequestClose={() => {
+                onClose();
+                if (onModalClose) onModalClose();
+            }}
         >
             <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
