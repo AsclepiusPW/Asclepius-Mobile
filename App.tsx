@@ -7,8 +7,9 @@ import React from "react";
 //Telas
 import { StackNavigation } from './src/navigation/StackNavigation'; 
 
-//Contexto
+//Contextos
 import { AuthProvider } from './src/context/AuthContext';
+import { UserProvider } from './src/context/UserContext';
 
 //Componentes
 import { Themes } from './global/theme';
@@ -33,7 +34,9 @@ export default function App() {
         />
         
         <AuthProvider>
-          <StackNavigation/>
+          <UserProvider>
+            <StackNavigation/>
+          </UserProvider>
         </AuthProvider>
 
       </ThemeProvider>
