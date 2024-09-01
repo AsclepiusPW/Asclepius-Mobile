@@ -26,9 +26,6 @@ import { ModalComponent } from "../../components/Modal-Component";
 import { LoginButtonSubmit, ContainerLogin, LoginForm, SignUpText, TouchLogin } from "./style";
 import { Themes } from "../../../global/theme";
 
-//Imagens
-import AsclepiusLogo from "../../../images/logo-color-cropped.png";
-
 //Types
 import { ModalType } from "../../../utils/types/typeModal";
 
@@ -90,32 +87,7 @@ export const ScreenSignUp = () => {
                 Alert.alert('Erro', 'Não foi possível criar a conta. Tente novamente.');
             }
         } catch (error) {
-            if (error instanceof AxiosError) {
-                //Possíveis erros do backend
-                const status = error.response?.status;
-                const backendErrors = error.response?.data;
-
-                if (status === 409 && backendErrors) {
-                    let errorMessage = String(backendErrors.error);
-                    
-                    //Há somente dois erros do backend que a validação não consegue resolver por si só
-                    if (errorMessage.includes("e-mail")) {
-                        setError("emailUser", { //Validação de e-mails duplicados
-                            message: "E-mail já existente"
-                        });
-                    }else{
-                        setError("phoneUser", { //Validação de telefone duplicados
-                            message: "Telefone já existente"
-                        });
-                    }
-                
-                } else {
-                    Alert.alert("Erro", "Ocorreu um erro ao criar a conta. Tente novamente.");
-                }
-            } else {
-                console.error("Erro inesperado:", (error as Error).message);
-                Alert.alert("Erro", "Ocorreu um erro inesperado. Tente novamente mais tarde.");
-            }
+            handleSignUpErrors(error);   
         } finally {
             setLoading(false);
         }
@@ -141,6 +113,37 @@ export const ScreenSignUp = () => {
             }
         })();
     }, [currentLocation?.latitude, currentLocation?.longitude]);
+
+
+    //Função de erros
+    const handleSignUpErrors = (error: unknown) => {
+        if (error instanceof AxiosError) {
+            //Possíveis erros do backend
+            const status = error.response?.status;
+            const backendErrors = error.response?.data;
+
+            if (status === 409 && backendErrors) {
+                let errorMessage = String(backendErrors.error);
+                
+                //Há somente dois erros do backend que a validação não consegue resolver por si só
+                if (errorMessage.includes("e-mail")) {
+                    setError("emailUser", { //Validação de e-mails duplicados
+                        message: "E-mail já existente"
+                    });
+                }else{
+                    setError("phoneUser", { //Validação de telefone duplicados
+                        message: "Telefone já existente"
+                    });
+                }
+            
+            } else {
+                Alert.alert("Erro", "Ocorreu um erro ao criar a conta. Tente novamente.");
+            }
+        } else {
+            console.error("Erro inesperado:", (error as Error).message);
+            Alert.alert("Erro", "Ocorreu um erro inesperado. Tente novamente mais tarde.");
+        }
+    }
 
     return (
         <ContainerLogin>

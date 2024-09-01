@@ -26,12 +26,12 @@ interface propsContext {
 }
 
 //Provedor do contexto
-export const AuthProvider: React.FC<propsContext> = ({children}) => {
+export const AuthProvider: React.FC<propsContext> = ({ children }) => {
     const [user, setUser] = useState<string | null>(null);
     const [token, setToken] = useState<string | null>(null);
     const isAuthenticated = !!user;
 
-    useEffect(()=> {
+    useEffect(() => {
         //Buscar o token no AsyncStorage quando o APP for iniciado
         const loadStorageData = async () => {
             const storedToken = await AsyncStorage.getItem('@user_token');
@@ -49,14 +49,14 @@ export const AuthProvider: React.FC<propsContext> = ({children}) => {
     }, []);
 
     //Função de login
-    const signIn = async (data: { userEmail: string; userPassword: string })=> {
+    const signIn = async (data: { userEmail: string; userPassword: string }) => {
         try {
             const response = await Api.post('/user/authentication', {
                 email: data.userEmail,
                 password: data.userPassword,
             });
 
-            const {token} = response.data;
+            const { token } = response.data;
             const userName = response.data.user?.name;
 
             await AsyncStorage.setItem('@user_token', token);
@@ -65,24 +65,11 @@ export const AuthProvider: React.FC<propsContext> = ({children}) => {
             setToken(token);
             setUser(userName);
 
-            Api.defaults.headers.common['Authorization'] = `Bearer ${token}`;            
+            Api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
         } catch (error) {
-            if (error instanceof AxiosError) {
-                if (error.response) {
-                    // Erro de resposta do servidor
-                    console.error("Erro do servidor:", error.response.data);
-                    throw new Error(error.response.data.message || 'Erro ao realizar a autenticação');
-                } else if (error.request) {
-                    // Erro de rede
-                    console.error("Erro de rede:", error.request);
-                    throw new Error('Erro de rede ao realizar a autenticação');
-                } else {
-                    // Erro desconhecido
-                    console.error("Erro desconhecido:", error.message);
-                    throw new Error('Erro desconhecido ao realizar a autenticação');
-                }
-            }
+            const errorMessage = handleAuthContxtErrors(error);
+            throw new Error(errorMessage); // Propaga a mensagem de erro formatada
         }
     };
 
@@ -90,6 +77,7 @@ export const AuthProvider: React.FC<propsContext> = ({children}) => {
     const signOut = async () => {
         await AsyncStorage.removeItem('@user_token');
         await AsyncStorage.removeItem('@user_name');
+        await AsyncStorage.removeItem('@user_data'); //Remove dados do usuário
 
         setToken(null);
         setUser(null);
@@ -98,7 +86,7 @@ export const AuthProvider: React.FC<propsContext> = ({children}) => {
     };
 
     return (
-        <AuthContext.Provider value={{isAuthenticated, signIn, signOut, token, user}}>
+        <AuthContext.Provider value={{ isAuthenticated, signIn, signOut, token, user }}>
             {children}
         </AuthContext.Provider>
     )
@@ -108,3 +96,22 @@ export const AuthProvider: React.FC<propsContext> = ({children}) => {
 export const useAuth = () => {
     return useContext(AuthContext);
 };
+
+//Função de erros
+const handleAuthContxtErrors = (error: unknown) => {
+    if (error instanceof AxiosError) {
+        if (error.response) {
+            // Erro de resposta do servidor
+            return error.response.data.error || 'Erro ao realizar a autenticação';
+        } else if (error.request) {
+            // Erro de rede
+            console.error("Erro de rede:", error.request);
+            return 'Erro de rede ao realizar a autenticação';
+        } else {
+            // Erro desconhecido
+            console.error("Erro desconhecido:", error.message);
+            return 'Erro desconhecido ao realizar a autenticação';
+        }
+    }
+    return 'Erro desconhecido ao realizar a autenticação';
+}

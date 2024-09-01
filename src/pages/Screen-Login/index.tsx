@@ -3,6 +3,7 @@ import React, {useState} from "react";
 import Yup from "yup";
 import { View, Image, Alert, Text, ActivityIndicator } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { AxiosError } from "axios";
 
 //Context
 import { useAuth } from "../../context/AuthContext"; 
@@ -42,7 +43,7 @@ export const ScreenLogin = () => {
     const navigation = useNavigation();
 
     //Constante de validação
-    const { control, handleSubmit, formState: { errors } } = useForm({
+    const { control, handleSubmit, formState: { errors }, setError } = useForm({
         defaultValues: {
             userEmail: "",
             userPassword: "",
@@ -54,17 +55,38 @@ export const ScreenLogin = () => {
     const onSubmit = async (data: {userEmail: string, userPassword: string}) => {
         setLoading(true); //Carregar
         try {
-            await signIn(data); //// Chama a função signIn do contexto de autenticação
+            await signIn(data); // Chama a função signIn do contexto de autenticação
             setModalType("autenticadedSucessfull"); // Define o tipo de modal para sucesso
         } catch (error) {
             // Exibe um alerta em caso de falha
             setModalType('autenticadedFallied'); // Define o tipo de modal para falha
-            console.log(error);
+            handleLogInErrors(error);
         }finally {
             handleOpenModal();
             setLoading(false);
         }
     };
+
+    //Função de controle de erros do backend
+    const handleLogInErrors = (error: unknown) => {
+        if (error instanceof Error) {
+            const errorMessage = error.message;
+
+            // Atualiza a mensagem de erro conforme necessário
+            if (errorMessage.includes("Invalid")) {
+                setError("userPassword", {
+                    message: "Senha inválida"
+                });
+            } else if (errorMessage.includes("not exist")) {
+                setError("userEmail", {
+                    message: "Usuário não existe"
+                });
+            } else {
+                // Exibe uma mensagem de erro genérica
+                console.error("Erro desconhecido", errorMessage)
+            }
+        }
+    }
 
     return (
         <ContainerLogin>
