@@ -7,11 +7,15 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 //Telas
 import { InitialScreen } from "../../pages/Screen-Initial";
 import { ScreenLogin } from '../../pages/Screen-Login';
+import { ScreenNewPassword } from '../../pages/Screen-New-Password';
 import { ScreenSignUp } from '../../pages/Screen-SignUp';
 import { ScreenDetailsEvent } from '../../pages/Screen-Details-Event';
 import { ScreenDetailsVaccine } from '../../pages/Screen-Details-Vaccine';
 import { ScreenEditProfile } from '../../pages/Screen-Edit-Profile';
 import { ScreenVaccinationRequest } from '../../pages/Screen-Vaccination-Requests';
+
+//Component
+import { UpdatingComponent } from '../../components/Updating-Component';
 
 //Navegação por abas
 import { TabNavigation } from '../TabNavigation';
@@ -23,7 +27,11 @@ import { useAuth } from '../../context/AuthContext';
 const Stack = createNativeStackNavigator();
 
 export const StackNavigation = () => {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, loading } = useAuth();
+
+    if (loading) {
+        return <UpdatingComponent ImageLoop={true}/>
+    }
 
     return (
         <NavigationContainer>
@@ -45,6 +53,7 @@ export const StackNavigation = () => {
                         />
                         <Stack.Screen name="Login" component={ScreenLogin} options={{ title: "Acessar conta" }} />
                         <Stack.Screen name="SignUp" component={ScreenSignUp} options={{ title: "Criar conta" }} />
+                        <Stack.Screen name="ResetPassword" component={ScreenNewPassword} options={{ title: "Redefinir senha" }} />
                     </>
                 ) : (
                     //Se estiver autenticado

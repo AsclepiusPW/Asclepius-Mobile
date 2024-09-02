@@ -26,7 +26,7 @@ interface CustomModalProps {
 }
 
 export const ModalComponent: React.FC<CustomModalProps> = ({ visible, typeModal, onClose, onModalClose }) => {
-    const {signOut} = useAuth();
+    const { signOut } = useAuth();
     const navigation = useNavigation();
 
     const handleEditProfile = () => {
@@ -51,6 +51,10 @@ export const ModalComponent: React.FC<CustomModalProps> = ({ visible, typeModal,
             case 'successfulEdition':
                 return 'like1';
             case 'faliedEdition':
+                return 'dislike1';
+            case 'successfulResetPassword':
+                return 'like1';
+            case 'faliedResetPassword':
                 return 'dislike1';
             default:
                 return 'questioncircle'; // Adiciona um ícone padrão
@@ -106,7 +110,7 @@ export const ModalComponent: React.FC<CustomModalProps> = ({ visible, typeModal,
                         </View>
                     </>
                 );
-            case 'faliedEdition' :
+            case 'faliedEdition':
                 return (
                     <>
                         <Text style={styles.modalText}>Falha na edição</Text>
@@ -116,6 +120,29 @@ export const ModalComponent: React.FC<CustomModalProps> = ({ visible, typeModal,
                         </View>
                     </>
                 );
+            case 'successfulResetPassword':
+                return (
+                    <>
+                        <Text style={styles.modalText}>Senha redefinida com sucesso</Text>
+                        <Text style={styles.modalSmallText}>Clique em Continuar para seguir para a página de login</Text>
+                        <View style={styles.modalViewChoises}>
+                            <TouchButton styleType='buttonSmallSolid' text='Continuar' onPress={()=> {
+                                onClose();
+                                navigation.navigate("Login");
+                            }} />
+                        </View>
+                    </>
+                );
+            case 'faliedResetPassword':
+                return(
+                    <>
+                        <Text style={styles.modalText}>Falha na redefinição de senha</Text>
+                        <Text style={styles.modalSmallText}>Por favor, tente novamente ou entre em contato com o suporte</Text>
+                        <View style={styles.modalViewChoises}>
+                            <TouchButton styleType='buttonSmallSolid' text='Tentar novamente' onPress={onClose} />
+                        </View>
+                    </>
+                )
             default:
                 return null;
         }

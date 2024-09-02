@@ -6,6 +6,7 @@ export declare global {
       Initial: undefined;
       Login: undefined;
       SignUp: undefined;
+      ResetPassword: undefined;
       TabNaviagtion: undefined; // Para a navegação das abas
       Home: undefined;
       ListVaccines: undefined;
