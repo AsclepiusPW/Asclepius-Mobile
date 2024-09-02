@@ -1,12 +1,12 @@
 // Imports
-import React, {useState} from "react";
+import React, { useState } from "react";
 import Yup from "yup";
 import { View, Image, Alert, Text, ActivityIndicator } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { AxiosError } from "axios";
 
 //Context
-import { useAuth } from "../../context/AuthContext"; 
+import { useAuth } from "../../context/AuthContext";
 
 //Validation
 import { LoginValidationSchema } from "../../../global/validationForm";
@@ -19,7 +19,7 @@ import { InputForm } from "../../components/Input-Form";
 import { ModalComponent } from "../../components/Modal-Component";
 
 // Styles
-import { LoginButtonSubmit, ContainerLogin, LoginForm, SignUpText, TouchSignUp } from "./style";
+import { LoginButtonSubmit, ContainerLogin, LoginForm, NewPassword, TouchSNewPassword, SignUpText, TouchSignUp } from "./style";
 import { Themes } from "../../../global/theme";
 
 //Imagens
@@ -29,11 +29,12 @@ import AsclepiusLogo from "../../../images/logo-color-cropped.png";
 import { ModalType } from "../../../utils/types/typeModal";
 
 export const ScreenLogin = () => {
-    const {signIn} = useAuth(); //Context
+    const { signIn } = useAuth(); //Context
 
     const [loading, setLoading] = useState<boolean>(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [modalType, setModalType] = useState<ModalType>('autenticadedSucessfull'); // Estado para o tipo do modal
+    const [visibleNewPassword, setVisibleNewPassword] = useState<boolean>(false);
 
     //Constantes para controle do modal
     const handleOpenModal = () => setModalVisible(true); //Função para abrir o modal
@@ -52,7 +53,7 @@ export const ScreenLogin = () => {
     });
 
     //Função de submisão de formulário
-    const onSubmit = async (data: {userEmail: string, userPassword: string}) => {
+    const onSubmit = async (data: { userEmail: string, userPassword: string }) => {
         setLoading(true); //Carregar
         try {
             await signIn(data); // Chama a função signIn do contexto de autenticação
@@ -61,7 +62,7 @@ export const ScreenLogin = () => {
             // Exibe um alerta em caso de falha
             setModalType('autenticadedFallied'); // Define o tipo de modal para falha
             handleLogInErrors(error);
-        }finally {
+        } finally {
             handleOpenModal();
             setLoading(false);
         }
@@ -77,6 +78,8 @@ export const ScreenLogin = () => {
                 setError("userPassword", {
                     message: "Senha inválida"
                 });
+
+                setVisibleNewPassword(true); //Fazendo com o componente de mudança de senha seja visivel
             } else if (errorMessage.includes("not exist")) {
                 setError("userEmail", {
                     message: "Usuário não existe"
@@ -92,7 +95,7 @@ export const ScreenLogin = () => {
         <ContainerLogin>
             <Image source={AsclepiusLogo} style={{ width: "80%", resizeMode: "contain" }} />
 
-            {loading && <ActivityIndicator size="large" color={`${Themes.colors.greenDark}`}/>}
+            {loading && <ActivityIndicator size="large" color={`${Themes.colors.greenDark}`} />}
 
             <LoginForm>
                 <Controller
@@ -127,6 +130,14 @@ export const ScreenLogin = () => {
                 />
                 {errors.userPassword && <Text style={{ color: `${Themes.colors.redHot}` }}>{errors.userPassword.message}</Text>}
 
+                {/* Componente só visivel quando erro de senha encontrado */}
+                {visibleNewPassword && (
+                    <NewPassword>
+                        Esqueceu sua senha?
+                        <TouchSNewPassword onPress={() => navigation.navigate("ResetPassword")}>Mudar senha!</TouchSNewPassword>
+                    </NewPassword>
+                )}
+
                 <LoginButtonSubmit>
                     <TouchButton
                         styleType="buttonLargerSolid"
@@ -135,10 +146,10 @@ export const ScreenLogin = () => {
                     />
                 </LoginButtonSubmit>
             </LoginForm>
-            
+
             <SignUpText>
-                Não tem uma conta ainda? 
-                <TouchSignUp onPress={() => navigation.navigate("SignUp")}>Cadastre-se!</TouchSignUp> 
+                Não tem uma conta ainda?
+                <TouchSignUp onPress={() => navigation.navigate("SignUp")}>Cadastre-se!</TouchSignUp>
             </SignUpText>
 
             {/* Modal para opções */}

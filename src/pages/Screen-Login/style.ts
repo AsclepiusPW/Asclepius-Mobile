@@ -27,6 +27,15 @@ export const LoginButtonSubmit = styled.View`
     margin-top: 50px;
 `;
 
+export const NewPassword = styled.Text`
+    font-size: 14px;
+    font-weight: ${Themes.fonts.regular};;
+`
+
+export const TouchSNewPassword = styled.Text`
+    color: ${Themes.colors.greenAcqua};
+`;
+
 export const SignUpText = styled.Text`
     font-size: 14px;
     font-weight: ${Themes.fonts.regular};;

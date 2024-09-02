@@ -13,6 +13,7 @@ interface AuthContextData {
     isAuthenticated: boolean;
     user: string | null;
     token: string | null;
+    loading: boolean;
     signIn(data: { userEmail: string; userPassword: string }): Promise<void>;
     signOut(): void;
 };
@@ -29,6 +30,7 @@ interface propsContext {
 export const AuthProvider: React.FC<propsContext> = ({ children }) => {
     const [user, setUser] = useState<string | null>(null);
     const [token, setToken] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(true); //Commeça carregando para verificar se o usuário está autenticado
     const isAuthenticated = !!user;
 
     useEffect(() => {
@@ -43,6 +45,8 @@ export const AuthProvider: React.FC<propsContext> = ({ children }) => {
 
                 Api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
             }
+
+            setLoading(false); //Termina de carregar após a verificação da autenticação do usuário
         }
 
         loadStorageData();
@@ -86,7 +90,7 @@ export const AuthProvider: React.FC<propsContext> = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, signIn, signOut, token, user }}>
+        <AuthContext.Provider value={{ isAuthenticated, signIn, signOut, token, user, loading }}>
             {children}
         </AuthContext.Provider>
     )
