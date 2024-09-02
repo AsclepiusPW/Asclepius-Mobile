@@ -35,9 +35,10 @@ export const ScreenEditProfile = () => {
     const { userData, loadDataUser, updateUser } = useUser(); //Buscando dados do usuário
     const { token } = useAuth(); //Buscando o token do usuário
 
+    //States
     const [profileImage, setProfileImage] = useState<string | null>(null); //State para armazenar a aimagem
     const [modalVisible, setModalVisible] = useState(false);
-    const [loading, setLoading] = useState<boolean>(false); 
+    const [loading, setLoading] = useState<boolean>(false);
     const [modalType, setModalType] = useState<ModalType>('successfulEdition'); // Estado para o tipo do modal
 
     //Constantes para controle do modal
@@ -58,18 +59,24 @@ export const ScreenEditProfile = () => {
         defaultValues: {
             nameUser: userData?.name || '',
             emailUser: userData?.email || '',
-            phoneUser: userData?.telefone || '',
-            passwordUser: '', //Senha mantida como vazia
+            phoneUser: userData?.telefone || ''
         },
         resolver: yupResolver(validationSchema),
     });
 
+    //Função para retornar imagem (Caso mudar o axios, mudar aqui tbm)
+    const handleImageProfileURI = (image: string | undefined) => {
+        return `http://192.168.0.101:5000/images/${image}`;
+    };
+
     // Função para carregar a imagem do perfil (depois atualizar)
-    // useEffect(() => {
-    //     if (userData && userData.image) {
-    //         setProfileImage(userData.image);
-    //     }
-    // }, [userData]);
+    useEffect(() => {
+        if (userData && userData.image !== "Image not registered") {
+            const urlImage = handleImageProfileURI(userData.image); //Capturando a imagem
+
+            setProfileImage(userData.image ? urlImage : "");
+        }
+    }, [userData]);
 
     //Função de enviar formulário
     const onSubmit = async (data: any) => {
@@ -81,15 +88,10 @@ export const ScreenEditProfile = () => {
                 name: data.nameUser,
                 email: data.emailUser,
                 telefone: data.phoneUser,
+                password: userData?.password,
                 latitude: userData?.latitude,
                 longitude: userData?.longitude,
-            };
-
-            //Tratamento da senha
-            if (data.passwordUser) { //Se alterar no formulário
-                updateUserData.password = data.passwordUser
-            }else{ //Caso não alterar
-                updateUserData.password = userData?.password
+                image: userData?.image,
             };
 
             const response = await Api.put("/user/update", updateUserData, {
@@ -97,17 +99,19 @@ export const ScreenEditProfile = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            
+
+            console.log(response.data, response.status);
             if (response.status === 201) {
                 await updateUser(updateUserData); //Atualizar o histórico do user
-            }else{
+                setModalType("successfulEdition");
+            } else {
                 setModalType("faliedEdition");
                 Alert.alert('Erro', 'Não foi possível atualizar o perfil. Tente novamente.');
             }
         } catch (error) {
             setModalType("faliedEdition");
             handleUpdateUserErrors(error);
-        }finally{
+        } finally {
             setLoading(false);
             handleOpenModal();
         }
@@ -123,7 +127,20 @@ export const ScreenEditProfile = () => {
         });
 
         if (!result.canceled && result.assets && result.assets.length > 0) {
-            setProfileImage(result.assets[0].uri); //Se for permitido eu realizo o set da imagem
+            const selectImageUri = result.assets[0].uri;
+            setProfileImage(selectImageUri); //Se for permitido eu realizo o set da imagem
+
+            try {
+                // Enviar a imagem para o backend
+                const response = await uploadImageToServer(selectImageUri);
+                if (response && response.image) {
+                    const urlImage = handleImageProfileURI(response.image); //Pegando a imagem
+                    setProfileImage(urlImage); // Atualiza a imagem do perfil com a URL retornada
+                }
+            } catch (error) {
+                Alert.alert('Erro ao enviar imagem', 'Não foi possível enviar a imagem para o servidor.');
+            }
+
         } else if (result.canceled) {
             Alert.alert('Seleção de imagem cancelada');
         } else {
@@ -132,7 +149,55 @@ export const ScreenEditProfile = () => {
     };
 
     //Função para realizar o envio da imagem da foto para a API
-    
+    const uploadImageToServer = async (imageURI: string) => {
+        const formData = new FormData();
+
+        //Criando um identificador para a imagem com date
+        const dateUpload = Date.now();
+
+        formData.append('image', {
+            uri: imageURI,
+            type: 'image/jpg',
+            name: `profile-${dateUpload}.jpg`,
+        } as any);
+
+
+        try {
+            const response = await Api.patch("/user/upload", formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            if (response.status === 201) {
+                //Criando objeto de atualização de usuário
+                const updateUserData: User = {
+                    name: userData?.name,
+                    email: userData?.email,
+                    telefone: userData?.telefone,
+                    password: userData?.password,
+                    latitude: userData?.latitude,
+                    longitude: userData?.longitude,
+                    image: response.data.image,
+                };
+
+                await updateUser(updateUserData);
+                setModalType("successfulEdition");
+                
+                return response.data; //Retornando a resposta do backend
+            } else {
+                setModalType("faliedEdition");
+                throw new Error('Failed to upload image');
+            }
+        } catch (error) {
+            setModalType("faliedEdition");
+            console.error('Error uploading image:', error);
+            throw error;
+        }finally{
+            handleOpenModal();
+        }
+    }
 
     //Função para tratar erros da atualização vindo do backend
     const handleUpdateUserErrors = (error: unknown) => {
@@ -140,22 +205,23 @@ export const ScreenEditProfile = () => {
             //Possíveis erros do backend
             const status = error.response?.status;
             const backendErrors = error.response?.data;
-
+            console.log(status, backendErrors);
+            
             if (status === 409 && backendErrors) {
                 let errorMessage = String(backendErrors.error);
-                
+
                 //Há somente dois erros do backend que a validação não consegue resolver por si só
                 if (errorMessage.includes("e-mail")) {
                     setError("emailUser", { //Validação de e-mails duplicados
                         message: "E-mail já existente"
                     });
-                }else{
+                } else {
                     setError("phoneUser", { //Validação de telefone duplicados
                         message: "Telefone já existente"
                     });
                 }
             }
-        } else{
+        } else {
             console.error("Erro inesperado:", (error as Error).message);
             Alert.alert("Erro", "Ocorreu um erro inesperado. Tente novamente mais tarde.");
         }
@@ -170,8 +236,8 @@ export const ScreenEditProfile = () => {
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                 {
                     loading ? (
-                        <UpdatingComponent/>
-                    ):(
+                        <UpdatingComponent />
+                    ) : (
                         <ContainerEditProfile>
 
                             <EditProfileHeader>
@@ -227,22 +293,6 @@ export const ScreenEditProfile = () => {
                                     )}
                                 />
                                 {errors.phoneUser && <Text style={{ color: `${Themes.colors.redHot}` }}>{errors.phoneUser.message}</Text>}
-
-                                <Controller
-                                    control={control}
-                                    name="passwordUser"
-                                    render={({ field: { onChange, onBlur, value } }) => (
-                                        <InputForm
-                                            icon="lock"
-                                            placeholder="Senha"
-                                            value={value || ""}
-                                            onChangeText={onChange}
-                                            onBlur={onBlur}
-                                            secureTextEntry={true}
-                                        />
-                                    )}
-                                />
-                                {errors.passwordUser && <Text style={{ color: `${Themes.colors.redHot}` }}>{errors.passwordUser.message}</Text>}
 
                                 <ContainerButtonSubmmit>
                                     <TouchButton text="Editar" styleType="buttonLargerSolid" onPress={handleSubmit(onSubmit)} />
