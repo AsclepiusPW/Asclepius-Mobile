@@ -19,7 +19,7 @@ export const ScreenProfile = () => {
     const { userData, loadDataUser } = useUser();
 
     const [loading, setLoading] = useState<boolean>(false);
-    
+
     //Pegando informações do usuário do banco de dados
     useEffect(() => {
         if (!userData) {
