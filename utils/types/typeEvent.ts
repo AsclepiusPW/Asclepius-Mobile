@@ -1,8 +1,15 @@
+//Importações
+import { infoVaccine } from "./typeInfoVaccine";
+
 export type Event = {
-  vacineName: string;
-  localName: string;
-  dateEvent: string;
-  vacancies: number;
-  latitude?: string;
-  longitude?: string;
+  id: string,
+  local: string;
+  latitude: string;
+  longitude: string;
+  date: string;
+  places: number;
+  status: string;
+  observation: string;
+  responsible: string;
+  vaccine: infoVaccine; //Mudando para receber um objeto
 };

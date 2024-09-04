@@ -6,7 +6,7 @@ import { ScrollView, View, Text, ActivityIndicator } from "react-native";
 import { HeaderApresentation } from "../../components/Header-Apresentation"
 import { DetailsProfile } from "../../components/Details-Profile";
 import { PresentMap } from "../../components/Present-Map";
-import { VaccinationRequest } from "../../components/Vaccination-Request";
+import { VaccinationRequestComponent } from "../../components/Vaccination-Request";
 import { UpdatingComponent } from "../../components/Updating-Component";
 
 //Estilização
@@ -55,9 +55,9 @@ export const ScreenProfile = () => {
                             longitude={userData && userData.longitude !== undefined ? userData.longitude.toString() : ""}
                         />
 
-                        { //Atualizar 
-                            userData?.requestReservation && (
-                                <VaccinationRequest />
+                        { 
+                            userData?.requestReservation && userData?.requestReservation?.length > 0 && (
+                                <VaccinationRequestComponent requestVaccination={userData.requestReservation}/>
                             ) 
                         }
                     </ContainerProfile>

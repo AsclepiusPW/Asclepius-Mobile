@@ -11,7 +11,14 @@ import styles from "./style";
 import VaccineInformation from "../Vaccine-Information";
 import Icon from "react-native-vector-icons/FontAwesome5";
 
-const VaccineRegister = ({ manufacturer, type, title }: infoVaccine) => {
+//props
+interface props {
+  manufacturer: string, 
+  type: string, 
+  name: string,
+}
+
+const VaccineRegister = ({ manufacturer, type, name }: props) => {
   //Const navegação
   const navigation = useNavigation();
 
@@ -23,7 +30,7 @@ const VaccineRegister = ({ manufacturer, type, title }: infoVaccine) => {
       <View style={styles.informations}>
         <VaccineInformation
           manufacturer={manufacturer}
-          title={title}
+          name={name}
           type={type}
         />
       </View>

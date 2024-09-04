@@ -33,13 +33,13 @@ export const ScreenDetailsVaccine = ({ vaccine }: prop) => {
 
     // Filtra a vacina pelo nome passado na prop
     const selectedVaccine = arrayInfoVaccines.find(
-      (info) => info.title === vaccine
+      (info) => info.name === vaccine //CORRIGIR
     );
     setArrayInfo(selectedVaccine);
 
     // Filtra os eventos associados ao nome da vacina
     const filteredEvents = arrayEvent.filter(
-      (event) => event.vacineName === vaccine
+      (event) => event.vaccine.id === vaccine //CORRIGIR
     );
     setEvents(filteredEvents);
 
@@ -75,7 +75,7 @@ export const ScreenDetailsVaccine = ({ vaccine }: prop) => {
                   text: arrayInfo.type,
                 },
               ]}
-              title={arrayInfo.title}
+              title={arrayInfo.name}
             />
             <Text
               style={{
@@ -93,10 +93,12 @@ export const ScreenDetailsVaccine = ({ vaccine }: prop) => {
                 events.map((content, index) => (
                   <EventComponent
                     key={index}
-                    dateEvent={content.dateEvent}
-                    localName={content.localName}
-                    vacancies={content.vacancies}
-                    vacineName={content.vacineName}
+                    date={content.date}
+                    local={content.local}
+                    places={content.places}
+                    vaccine={content.vaccine.name}
+                    latitude={content.latitude} //Adicionei esses campos
+                    longitude={content.longitude} //Adicionei esses campos
                   />
                 ))
               )}

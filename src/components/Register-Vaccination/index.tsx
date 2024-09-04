@@ -16,7 +16,7 @@ import { Themes } from "../../../global/theme";
 interface props {
     nameVaccina?: string,
     dateVaccination?: string,
-    dosage?: string,
+    dosage?: number,
     description?: string,
 }
 
@@ -50,7 +50,7 @@ export const RegisterVaccination: React.FC<props> = ({ nameVaccina, dateVaccinat
                         <Text style={styles.titleList}>Dosagem:</Text>
                     </View>
                     
-                    <Text style={styles.textList}>{dosage ? dosage : "dose única"}</Text>
+                    <Text style={styles.textList}>{dosage ? dosage.toString() : "dose única"}</Text>
                 </View>
 
                 <View>

@@ -6,13 +6,16 @@ import { ScrollView, View, Text, TouchableOpacity, Alert, FlatList, Dimensions }
 import { HeaderApresentation } from "../../components/Header-Apresentation";
 import { NewsList } from "../../components/NewsList-Component";
 import { HomeCalendarComponent } from "../../components/Home-Calendar-Component"
-import { VaccinationRequest } from "../../components/Vaccination-Request";
+import { VaccinationRequestComponent } from "../../components/Vaccination-Request";
 
 //Estilização
 import { ContainerHomePage } from "./style";
 
+//Context
+import { useUser } from "../../context/UserContext";
 
 export const HomePage = () => {
+    const {userData} = useUser();
 
     return (
         <ScrollView>
@@ -23,7 +26,7 @@ export const HomePage = () => {
 
                 <HomeCalendarComponent/>
 
-                <VaccinationRequest/>
+                <VaccinationRequestComponent requestVaccination={userData?.requestReservation}/>
 
             </ContainerHomePage>
         </ScrollView>

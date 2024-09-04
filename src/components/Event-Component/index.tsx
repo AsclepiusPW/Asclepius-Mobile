@@ -13,14 +13,24 @@ import { Event } from "../../../utils/types/typeEvent";
 import { PresentMap } from "../Present-Map";
 import TextComponent from "../Text-Component";
 
+//Props
+type prop = {
+  vaccine: string;
+  date: string,
+  places: number,
+  local: string,
+  latitude?: string,
+  longitude?: string,
+};
+
 const EventComponent = ({
-  vacineName,
-  dateEvent,
-  vacancies,
-  localName,
+  vaccine,
+  date,
+  places,
+  local,
   latitude,
   longitude,
-}: Event) => {
+}: prop) => {
   //Contante de navegação
   const navigation = useNavigation();
 
@@ -45,14 +55,14 @@ const EventComponent = ({
       </View>
 
       <View style={styles.informations}>
-        <TextComponent title={localName} />
-        <TextComponent subTitle="Vacina" iconName="syringe" text={vacineName} />
+        <TextComponent title={local} />
+        <TextComponent subTitle="Vacina" iconName="syringe" text={vaccine} />
         <TextComponent
           iconName="calendar"
           subTitle="Data"
-          text={formatDate(dateEvent)}
+          text={formatDate(date)}
         />
-        <TextComponent iconName="user" subTitle="Vagas" text={`${vacancies}`} />
+        <TextComponent iconName="user" subTitle="Vagas" text={`${places}`} />
       </View>
     </TouchableOpacity>
   );

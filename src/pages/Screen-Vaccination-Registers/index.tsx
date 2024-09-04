@@ -47,7 +47,7 @@ export const ScreenVaccinationRegisters: React.FC<props> = ({ userName, userEmai
                 setNoRecords(false);
             } else {
                 const searchRegister = arrayVaccinationRegister.filter((register) =>
-                    register.nameVaccina?.toLowerCase().includes(searchQuery)
+                    register.vaccine.name?.toLowerCase().includes(searchQuery)
                 );
                 setVaccinationRegister(searchRegister);
                 setNoRecords(searchRegister.length === 0);
@@ -84,10 +84,10 @@ export const ScreenVaccinationRegisters: React.FC<props> = ({ userName, userEmai
                             vaccinationRegister.map((content, index) => (
                                 <RegisterVaccination
                                     key={index}
-                                    nameVaccina={content.nameVaccina}
-                                    dateVaccination={content.dateVaccination}
-                                    dosage={content.dosage}
-                                    description={content.description}
+                                    nameVaccina={content.vaccine.name}
+                                    dateVaccination={content.date}
+                                    dosage={content.quantityApplied}
+                                    description={content.vaccine.description}
                                 />
                             ))
                         )}

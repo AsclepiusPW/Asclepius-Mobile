@@ -56,4 +56,9 @@ export const styles = StyleSheet.create({
         color: `${Themes.colors.redHot}`,
         borderBottomColor: `${Themes.colors.redHot}`,
     },
+
+    acceptedResquested: {
+        color: `${Themes.colors.disabled}`,
+        borderBottomColor: `${Themes.colors.disabled}`,
+    },
 });

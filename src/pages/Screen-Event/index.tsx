@@ -21,8 +21,9 @@ export const ScreenEvent = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [noRecords, setNoRecords] = useState<boolean>(false);
+
   const [dateEvent, setDateEvent] = useState<string[]>(
-    arrayEvent.map((event) => event.dateEvent)
+    arrayEvent.map((event) => event.date)
   );
 
   const searchEvent = (event: string) => {
@@ -39,7 +40,7 @@ export const ScreenEvent = () => {
         setNoRecords(false);
       } else {
         const searchEvent = arrayEvent.filter((event) =>
-          event.localName.toLowerCase().includes(searchQuery)
+          event.local.toLowerCase().includes(searchQuery)
         );
         console.log(searchEvent);
 
@@ -78,10 +79,10 @@ export const ScreenEvent = () => {
               event.map((content, index) => (
                 <EventComponent
                   key={index}
-                  dateEvent={content.dateEvent}
-                  localName={content.localName}
-                  vacancies={content.vacancies}
-                  vacineName={content.vacineName}
+                  date={content.date}
+                  local={content.local}
+                  places={content.places}
+                  vaccine={content.vaccine.name}
                   latitude={content.latitude}
                   longitude={content.longitude}
                 />

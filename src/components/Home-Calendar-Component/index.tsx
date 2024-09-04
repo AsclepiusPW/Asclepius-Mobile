@@ -21,7 +21,7 @@ export const HomeCalendarComponent = () => {
     const navigation = useNavigation();
 
     const [dateEvent, setDateEvent] = useState<string[]>(
-        arrayEvent.map((event) => event.dateEvent)
+        arrayEvent.map((event) => event.date)
     );
 
     return (

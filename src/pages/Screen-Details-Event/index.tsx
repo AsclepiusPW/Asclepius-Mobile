@@ -40,12 +40,12 @@ export const ScreenDetailsEvent = ({ localName }: Prop) => {
 
     setTimeout(() => {
       const selectedEvent = arrayEvent.find(
-        (event) => event.localName === localName
+        (event) => event.local === localName
       );
       setEvent(selectedEvent);
 
       const selectedVaccine = arrayInfoVaccines.find(
-        (event) => event.title === selectedEvent?.vacineName
+        (event) => event.name === selectedEvent?.vaccine.name
       );
       setInfoVaccine(selectedVaccine);
 
@@ -78,12 +78,12 @@ export const ScreenDetailsEvent = ({ localName }: Prop) => {
                 {
                   iconName: "syringe",
                   label: "Vacina",
-                  text: event.vacineName,
+                  text: event.vaccine.name,
                 },
                 {
                   iconName: "calendar",
                   label: "Data",
-                  text: formatDate(event.dateEvent),
+                  text: formatDate(event.date),
                 },
                 {
                   iconName: "calendar-minus",
@@ -91,10 +91,10 @@ export const ScreenDetailsEvent = ({ localName }: Prop) => {
                   text: "Não Realizado",
                 },
               ]}
-              title={event.localName}
+              title={event.local}
             />
             <PresentDetails
-              title={infoVaccine.title}
+              title={infoVaccine.name}
               contraindications={infoVaccine.contraindications}
               description={infoVaccine.description}
               details={[
@@ -116,7 +116,7 @@ export const ScreenDetailsEvent = ({ localName }: Prop) => {
                 {
                   iconName: "user-alt",
                   label: "Responsável",
-                  text: event.localName,
+                  text: event.local,
                 },
               ]}
               observation={infoVaccine.observations}

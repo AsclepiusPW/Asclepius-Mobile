@@ -17,15 +17,31 @@ import IconCalendar from 'react-native-vector-icons/FontAwesome5';
 import { styles } from "./style";
 import { Themes } from "../../../global/theme";
 
-export const RequestVaccination: React.FC<VaccinationRequest> = ({ dateEvent, dateRequest, latitude, longitude, nameEvent, responseEvent, statusEvent, vacanciesEvent, vaccineEvent }) => {
+//Types
+type eventType = "Reservation approved" | "Reservation denied" | "Reservation requested";
+
+//Props
+interface props {
+    dateEvent: string, 
+    dateRequest: string, 
+    latitude: string, 
+    longitude: string, 
+    nameEvent: string, 
+    responseEvent: eventType, 
+    statusEvent: string, 
+    vacanciesEvent: number, 
+    vaccineEvent: string
+}
+
+export const RequestVaccination: React.FC<props> = ({ dateEvent, dateRequest, latitude, longitude, nameEvent, responseEvent, statusEvent, vacanciesEvent, vaccineEvent }) => {
     //Código para a edição do componente
     let contentStyle;
     let contentText;
 
-    if (responseEvent === 'approved') {
+    if (responseEvent === 'Reservation approved') {
         contentStyle = styles.acceptedTrue;
         contentText = 'Aprovada';
-    } else if (responseEvent === 'denied') {
+    } else if (responseEvent === 'Reservation denied') {
         contentStyle = styles.acceptedFalse;
         contentText = 'Negado';
     } else {
@@ -68,7 +84,7 @@ export const RequestVaccination: React.FC<VaccinationRequest> = ({ dateEvent, da
                             <Text style={styles.titleList}>Vagas:</Text>
                         </View>
 
-                        <Text style={styles.textList}>{vacanciesEvent ? vacanciesEvent : "00"}</Text>
+                        <Text style={styles.textList}>{vacanciesEvent ? vacanciesEvent.toString() : "00"}</Text>
                     </View>
 
                     <View style={styles.itemList}>

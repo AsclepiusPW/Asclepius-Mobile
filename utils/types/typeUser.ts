@@ -1,5 +1,8 @@
-//Tipagem de usuário
+//Importações
+import { Vaccination } from "./typeVaccinationRegister"
+import { VaccinationRequest } from "./typeVaccinationRequest"
 
+//Tipagem de usuário
 export type User = {
     image?: string,
     name?: string,
@@ -8,6 +11,6 @@ export type User = {
     latitude?: number,
     longitude?: number,
     password?: string,
-    requestReservation?: any[],
-    vaccination?: any[],
+    requestReservation?: VaccinationRequest[],
+    vaccination?: Vaccination[],
 }

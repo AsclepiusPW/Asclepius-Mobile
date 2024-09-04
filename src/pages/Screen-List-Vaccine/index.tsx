@@ -30,7 +30,7 @@ export const ScreenListVaccine = () => { //Refatorando importação
         setNoRecords(false);
       } else {
         const searchInfoVaccines = arrayInfoVaccines.filter((info) =>
-          info.title.toLowerCase().includes(searchQuery)
+          info.name.toLowerCase().includes(searchQuery)
         );
 
         setInfoVaccines(searchInfoVaccines);
@@ -64,7 +64,7 @@ export const ScreenListVaccine = () => { //Refatorando importação
                 <VaccineRegister
                   key={index}
                   manufacturer={content.manufacturer}
-                  title={content.title}
+                  name={content.name}
                   type={content.type}
                 />
               ))
