@@ -34,6 +34,21 @@ interface props {
 }
 
 export const RequestVaccination: React.FC<props> = ({ dateEvent, dateRequest, latitude, longitude, nameEvent, responseEvent, statusEvent, vacanciesEvent, vaccineEvent }) => {
+    
+    //Edição de date
+    const formatDate = (dateString: string): string => {
+        // Cria uma instância de Date a partir da string ISO
+        const date = new Date(dateString);
+    
+        // Obtém o dia, mês e ano
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Mês é 0 indexado, por isso adicionamos 1
+        const year = date.getUTCFullYear();
+    
+        // Retorna no formato "DD/MM/YYYY"
+        return `${day}/${month}/${year}`;
+    };
+    
     //Código para a edição do componente
     let contentStyle;
     let contentText;
@@ -52,7 +67,7 @@ export const RequestVaccination: React.FC<props> = ({ dateEvent, dateRequest, la
     return (
         <View style={styles.containerRequest}>
             <View style={styles.requestHeader}>
-                <Text style={[styles.requestHeaderTitle, contentStyle]}>Solicitação - {dateRequest ? dateRequest : "00/ 00/ 0000"}</Text>
+                <Text style={[styles.requestHeaderTitle, contentStyle]}>Solicitação - {dateRequest ? formatDate(dateRequest) : "00/ 00/ 0000"}</Text>
             </View>
 
             <View style={styles.requestMap}>
@@ -75,7 +90,7 @@ export const RequestVaccination: React.FC<props> = ({ dateEvent, dateRequest, la
                             <Text style={styles.titleList}>Data:</Text>
                         </View>
 
-                        <Text style={styles.textList}>{dateEvent ? dateEvent : "00/ 00/ 0000"}</Text>
+                        <Text style={styles.textList}>{dateEvent ? formatDate(dateEvent) : "00/ 00/ 0000"}</Text>
                     </View>
 
                     <View style={styles.itemList}>
