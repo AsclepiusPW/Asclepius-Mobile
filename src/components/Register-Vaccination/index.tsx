@@ -21,6 +21,20 @@ interface props {
 }
 
 export const RegisterVaccination: React.FC<props> = ({ nameVaccina, dateVaccination, dosage, description }) => {
+    
+    const formatDate = (dateString: string): string => {
+        // Cria uma instância de Date a partir da string ISO
+        const date = new Date(dateString);
+    
+        // Obtém o dia, mês e ano
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Mês é 0 indexado, por isso adicionamos 1
+        const year = date.getUTCFullYear();
+    
+        // Retorna no formato "DD/MM/YYYY"
+        return `${day}/${month}/${year}`;
+    };
+    
     return (
         <View style={styles.container}>
             <View style={styles.containerHeader}>
@@ -41,7 +55,7 @@ export const RegisterVaccination: React.FC<props> = ({ nameVaccina, dateVaccinat
                         <Text style={styles.titleList}>Data:</Text>
                     </View>
                     
-                    <Text style={styles.textList}>{dateVaccination ? dateVaccination : "00/ 00/ 0000"}</Text>
+                    <Text style={styles.textList}>{dateVaccination ? formatDate(dateVaccination) : "00/ 00/ 0000"}</Text>
                 </View>
             
                 <View style={styles.itemList}>

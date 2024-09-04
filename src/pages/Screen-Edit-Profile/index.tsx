@@ -92,6 +92,8 @@ export const ScreenEditProfile = () => {
                 latitude: userData?.latitude,
                 longitude: userData?.longitude,
                 image: userData?.image,
+                requestReservation: userData?.requestReservation,
+                vaccination: userData?.vaccination
             };
 
             const response = await Api.put("/user/update", updateUserData, {
@@ -180,6 +182,8 @@ export const ScreenEditProfile = () => {
                     latitude: userData?.latitude,
                     longitude: userData?.longitude,
                     image: response.data.image,
+                    requestReservation: userData?.requestReservation,
+                    vaccination: userData?.vaccination,
                 };
 
                 await updateUser(updateUserData);
