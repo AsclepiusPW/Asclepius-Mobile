@@ -13,28 +13,10 @@ import userUndefined from "../../../images/user-undefined.jpg";
 interface props {
     userName?: string,
     userEmail?: string,
-    userImage?: string,
     profileImage?: string | null //Para a imagem que será recuperada do dispositivo
 }
 
-export const SmallDetailsProfile: React.FC<props> = ({ userName, userImage, userEmail, profileImage }) => {
-    const [imageProfile, setImageProfile] = useState<string | undefined>("Image not registered");
-    
-    //Função para listar a imagem de perfil
-    const handleSelectImmageProfile = () => {
-        if (userImage && userImage !== "Image not registered") {
-            return `http://192.168.0.101:5000/images/${userImage}`; //Mudar isso caso mudar o ip do axios
-        }else {
-            return undefined;
-        }
-    }
-
-    //O UseEffect será chamado sempre que a imagem mmudar
-    useEffect(()=> {
-        const imageURI = handleSelectImmageProfile();
-        setImageProfile(imageURI);
-    }, [userImage])
-    
+export const SmallDetailsProfile: React.FC<props> = ({ userName, userEmail, profileImage }) => {
     return (
         <LinearGradient
             colors={['#05E9AC', '#2C6975']}
@@ -44,7 +26,7 @@ export const SmallDetailsProfile: React.FC<props> = ({ userName, userImage, user
         >
             <View style={styles.circleDetails}>
                 <Image
-                    source={profileImage ? { uri: profileImage } : (userImage ? { uri: userImage } : userUndefined)}
+                    source={profileImage ? { uri: profileImage } : userUndefined}
                     style={styles.circleImage}
                 />
             </View>

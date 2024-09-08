@@ -15,6 +15,9 @@ import userUndefined from "../../../images/user-undefined.jpg";
 import { styles } from "./style";
 import { Themes } from "../../../global/theme";
 
+//Api
+import { portApi } from "../../connection/axios";
+
 //Props
 interface props {
     userName?: string,
@@ -31,7 +34,7 @@ export const DetailsProfile: React.FC<props> = ({ userEmail, userName, userPhone
     //Função para listar a imagem de perfil
     const handleSelectImmageProfile = () => {
         if (userImage && userImage !== "Image not registered") {
-            return `http://192.168.0.101:5000/images/${userImage}`; //Mudar isso caso mudar o ip do axios
+            return `${portApi}/images/${userImage}`; //Mudar isso caso mudar o ip do axios
         }else {
             return undefined;
         }

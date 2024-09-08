@@ -10,6 +10,7 @@ import { useAuth } from "../../context/AuthContext";
 //API
 import { Api } from "../../connection/axios";
 import { AxiosError } from "axios";
+import { portApi } from "../../connection/axios"; //Caminho da Api
 
 //Types
 import { ModalType } from "../../../utils/types/typeModal";
@@ -66,7 +67,7 @@ export const ScreenEditProfile = () => {
 
     //Função para retornar imagem (Caso mudar o axios, mudar aqui tbm)
     const handleImageProfileURI = (image: string | undefined) => {
-        return `http://192.168.0.101:5000/images/${image}`;
+        return `${portApi}/images/${image}`; //Acessando a imagem da Api
     };
 
     // Função para carregar a imagem do perfil (depois atualizar)
@@ -245,7 +246,11 @@ export const ScreenEditProfile = () => {
                         <ContainerEditProfile>
 
                             <EditProfileHeader>
-                                <SmallDetailsProfile profileImage={profileImage} />
+                                <SmallDetailsProfile 
+                                    userEmail={userData?.email} 
+                                    userName={userData?.name} 
+                                    profileImage={profileImage} 
+                                />
 
                                 <TouchButton text="Editar imagem" styleType="buttonSmallSolid" onPress={handleSelectImage} />
                             </EditProfileHeader>
