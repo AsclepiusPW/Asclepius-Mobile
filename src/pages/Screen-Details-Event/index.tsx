@@ -1,65 +1,162 @@
 //Imports
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, View } from "react-native";
+import { ActivityIndicator, Alert, ScrollView, View } from "react-native";
+import { useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 
 //Styles
 import styles from "./style";
 import { Themes } from "../../../global/theme";
 
 //Types
-import { arrayInfoVaccines } from "../../../utils/tests/arrayInfoVaccine";
-import { arrayEvent } from "../../../utils/tests/arrayEvent";
 import { Event } from "../../../utils/types/typeEvent";
+import { ModalType } from "../../../utils/types/typeModal";
 
 //Components
 import PresentDetails from "../../components/Present-Details";
 import { NoRecordView } from "../../components/No-Record-View";
 import { PresentMap } from "../../components/Present-Map";
 import { infoVaccine } from "../../../utils/types/typeInfoVaccine";
-import EventComponent from "../../components/Event-Component";
 import { TouchButton } from "../../components/Touch-Button";
+import { ModalComponent } from "../../components/Modal-Component";
 
-type Prop = {
-  localName?: string;
-};
+//Api
+import { Api } from "../../connection/axios";
+import { AxiosError } from "axios";
 
-export const ScreenDetailsEvent = ({ localName }: Prop) => {
+//Contexts
+import { userEvent } from "../../context/EventContext";
+import { useAuth } from "../../context/AuthContext";
+import { useUser } from "../../context/UserContext";
+
+export const ScreenDetailsEvent = () => {
+  //Contextos
+  const { eventData, loadingEvent } = userEvent();
+  const { token } = useAuth(); //Token do usuário
+  const { userData, updateUser } = useUser();
+
+  //Pegando o id da requisição
+  const route = useRoute();
+  const { idEvent } = route.params as { idEvent: string };
+
+  //Navigator
+  const navigator = useNavigation();
+
+  //States
+  const [event, setEvent] = useState<Event | undefined>();
+  const [infoVaccine, setInfoVaccine] = useState<infoVaccine>();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [noRecords, setNoRecords] = useState<boolean>(false);
+
+  //Contorladores do modal
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalType, setModalType] = useState<ModalType>("sucessfulRequest"); // Estado para o tipo do modal
+
+  //Constantes para controle do modal
+  const handleOpenModal = () => setModalVisible(true); //Função para abrir o modal
+  const handleCloseModal = () => setModalVisible(false); //Função para fechar o modal
+
+  //Formatação da data
   const formatDate = (dateString: string): string => {
     const [year, month, day] = dateString.split("-");
     return `${day}/${month}/${year}`;
   };
 
-  const [event, setEvent] = useState<Event>();
-  const [infoVaccine, setInfoVaccine] = useState<infoVaccine>();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [noRecords, setNoRecords] = useState<boolean>(false);
-
+  //Função de redenrização
   useEffect(() => {
-    setLoading(true);
-    setNoRecords(false);
+    if (eventData.length > 0) {
+      const foundEvent = eventData.find((event) => event.id === idEvent);
 
-    setTimeout(() => {
-      const selectedEvent = arrayEvent.find(
-        (event) => event.local === localName
-      );
-      setEvent(selectedEvent);
-
-      const selectedVaccine = arrayInfoVaccines.find(
-        (event) => event.name === selectedEvent?.vaccine.name
-      );
-      setInfoVaccine(selectedVaccine);
-
-      if (!selectedVaccine && !selectedEvent) {
+      if (foundEvent) {
+        setEvent(foundEvent);
+        setInfoVaccine(foundEvent.vaccine);
+        setNoRecords(false);
+      } else {
         setNoRecords(true);
       }
+    }
+  }, [eventData, idEvent]);
+
+  //Função para realizar a solicitação de reseva:
+  const handleReservationRequest = async () => {
+    if (!event) return;
+
+    try {
+      setLoading(true);
+      // Pega a data e hora atuais no formato ISO (padrão UTC)
+      const currentDate = new Date().toISOString();
+
+      //Requisição a API
+      const response = await Api.post(
+        "/reservation",
+        {
+          date: currentDate, // Data do evento
+          idCalendar: idEvent, // ID do calendário (evento)
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Passa o token no cabeçalho
+          },
+        }
+      );
+
+      if (response.status === 201) {
+        setModalType("sucessfulRequest");
+        await handleUpdateRequestEventsUser();
+      }
+    } catch (error) {
+      console.error("Erro ao solicitar a reserva:", error);
+      handleRequestErrors(error); //Função para tratar erros
+    } finally {
       setLoading(false);
-    }, 1000);
-  }, [localName]);
+      handleOpenModal();
+    }
+  };
+
+  //Função de erros
+  const handleRequestErrors = (error: unknown) => {
+    if (error instanceof AxiosError) {
+      //Possíveis erros do backend
+      const status = error.response?.status;
+      if (status === 409) {
+        setModalType("faliedRequestAlreadyDone"); //Solicitação já existe
+      } else {
+        setModalType("faliedRequest"); //Solicitação deu erro de alguma outra coisa
+      }
+    } else {
+      console.error("Erro inesperado:", (error as Error).message);
+      Alert.alert(
+        "Erro",
+        "Ocorreu um erro inesperado. Tente novamente mais tarde."
+      );
+    }
+  };
+
+  //Função para atualização do dados do usuário
+  const handleUpdateRequestEventsUser = async () => {
+    try {
+      const response = await Api.get("/reservation", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        // Status correto para a obtenção de dados
+        updateUser({
+          ...userData, // Atualiza todos os campos do usuário
+          requestReservation: response.data,
+        });
+      }
+    } catch (error) {
+      console.log("Um erro encontrado ao buscar os dados do usuário: ", error);
+    }
+  };
 
   return (
     <ScrollView>
       <View style={styles.container}>
-        {loading ? (
+        {loadingEvent ? (
           <ActivityIndicator
             size="large"
             color={`${Themes.colors.greenDark}`}
@@ -95,7 +192,7 @@ export const ScreenDetailsEvent = ({ localName }: Prop) => {
             />
             <PresentDetails
               title={infoVaccine.name}
-              contraindications={infoVaccine.contraindications}
+              contraindications={infoVaccine.contraIndication}
               description={infoVaccine.description}
               details={[
                 {
@@ -125,12 +222,14 @@ export const ScreenDetailsEvent = ({ localName }: Prop) => {
               <TouchButton
                 text="Solicitar Reserva de Vaga"
                 styleType="buttonLargerSolid"
+                onPress={() => handleReservationRequest()}
               />
             </View>
             <View style={styles.buttonContainer}>
               <TouchButton
                 text="Ver Outros Eventos"
                 styleType="buttonLargerOpacity"
+                onPress={() => navigator.navigate("ListEvents")}
               />
             </View>
           </View>
@@ -138,6 +237,12 @@ export const ScreenDetailsEvent = ({ localName }: Prop) => {
           <NoRecordView title="Vacina não encontrada" />
         )}
       </View>
+
+      <ModalComponent
+        visible={modalVisible}
+        onClose={handleCloseModal}
+        typeModal={modalType}
+      />
     </ScrollView>
   );
 };
