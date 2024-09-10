@@ -89,6 +89,28 @@ export const AuthProvider: React.FC<propsContext> = ({ children }) => {
         delete Api.defaults.headers.common['Authorization'];
     };
 
+    //Função de erros
+    const handleAuthContxtErrors = (error: unknown) => {
+        if (error instanceof AxiosError) {
+            if (error.response) {
+                if (error.response.status === 401) {
+                    signOut(); // Desconecta o usuário em caso de erro de autenticação
+                }
+                // Erro de resposta do servidor
+                return error.response.data.error || 'Erro ao realizar a autenticação';
+            } else if (error.request) {
+                // Erro de rede
+                console.error("Erro de rede:", error.request);
+                return 'Erro de rede ao realizar a autenticação';
+            } else {
+                // Erro desconhecido
+                console.error("Erro desconhecido:", error.message);
+                return 'Erro desconhecido ao realizar a autenticação';
+            }
+        }
+        return 'Erro desconhecido ao realizar a autenticação';
+    }
+
     return (
         <AuthContext.Provider value={{ isAuthenticated, signIn, signOut, token, user, loading }}>
             {children}
@@ -100,22 +122,3 @@ export const AuthProvider: React.FC<propsContext> = ({ children }) => {
 export const useAuth = () => {
     return useContext(AuthContext);
 };
-
-//Função de erros
-const handleAuthContxtErrors = (error: unknown) => {
-    if (error instanceof AxiosError) {
-        if (error.response) {
-            // Erro de resposta do servidor
-            return error.response.data.error || 'Erro ao realizar a autenticação';
-        } else if (error.request) {
-            // Erro de rede
-            console.error("Erro de rede:", error.request);
-            return 'Erro de rede ao realizar a autenticação';
-        } else {
-            // Erro desconhecido
-            console.error("Erro desconhecido:", error.message);
-            return 'Erro desconhecido ao realizar a autenticação';
-        }
-    }
-    return 'Erro desconhecido ao realizar a autenticação';
-}
