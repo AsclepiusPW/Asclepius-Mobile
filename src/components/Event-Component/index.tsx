@@ -15,6 +15,7 @@ import TextComponent from "../Text-Component";
 
 //Props
 type prop = {
+  idEvent: string;
   vaccine: string;
   date: string,
   places: number,
@@ -24,6 +25,7 @@ type prop = {
 };
 
 const EventComponent = ({
+  idEvent,
   vaccine,
   date,
   places,
@@ -35,14 +37,19 @@ const EventComponent = ({
   const navigation = useNavigation();
 
   const formatDate = (dateString: string): string => {
-    // Espera-se que a string esteja no formato "YYYY-MM-DD"
-    const [year, month, day] = dateString.split("-");
+    // Cria uma instância de Date a partir da string ISO
+    const date = new Date(dateString);
+    
+    // Obtém o dia, mês e ano
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Mês é 0 indexado, por isso adicionamos 1
+    const year = date.getUTCFullYear();
 
     // Retorna no formato "DD/MM/YYYY"
     return `${day}/${month}/${year}`;
   };
   return (
-    <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("DetailsEvent")}>
+    <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("DetailsEvent", {idEvent: idEvent})}>
       <View style={{ marginLeft: 20 }}>
         <PresentMap
           zoomEnable={false}

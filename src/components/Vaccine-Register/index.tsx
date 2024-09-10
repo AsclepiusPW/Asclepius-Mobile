@@ -16,14 +16,15 @@ interface props {
   manufacturer: string, 
   type: string, 
   name: string,
+  idVaccine: string, //Recebendo o id da vacina
 }
 
-const VaccineRegister = ({ manufacturer, type, name }: props) => {
+const VaccineRegister = ({ manufacturer, type, name, idVaccine }: props) => {
   //Const navegação
   const navigation = useNavigation();
 
   return (
-    <TouchableOpacity style={styles.container} onPress={() =>navigation.navigate("DetailsVaccine")}>
+    <TouchableOpacity style={styles.container} onPress={() =>navigation.navigate("DetailsVaccine", {idVaccine: idVaccine})}>
       <View style={styles.styledViewIcon}>
         <Icon style={styles.styledIcon} size={64} name="syringe" />
       </View>

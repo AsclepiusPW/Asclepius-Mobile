@@ -56,6 +56,12 @@ export const ModalComponent: React.FC<CustomModalProps> = ({ visible, typeModal,
                 return 'like1';
             case 'faliedResetPassword':
                 return 'dislike1';
+            case 'sucessfulRequest':
+                return 'like1';
+            case 'faliedRequest':
+                return 'dislike1';
+            case 'faliedRequestAlreadyDone':
+                return 'dislike1';
             default:
                 return 'questioncircle'; // Adiciona um ícone padrão
         }
@@ -126,7 +132,7 @@ export const ModalComponent: React.FC<CustomModalProps> = ({ visible, typeModal,
                         <Text style={styles.modalText}>Senha redefinida com sucesso</Text>
                         <Text style={styles.modalSmallText}>Clique em Continuar para seguir para a página de login</Text>
                         <View style={styles.modalViewChoises}>
-                            <TouchButton styleType='buttonSmallSolid' text='Continuar' onPress={()=> {
+                            <TouchButton styleType='buttonSmallSolid' text='Continuar' onPress={() => {
                                 onClose();
                                 navigation.navigate("Login");
                             }} />
@@ -134,7 +140,7 @@ export const ModalComponent: React.FC<CustomModalProps> = ({ visible, typeModal,
                     </>
                 );
             case 'faliedResetPassword':
-                return(
+                return (
                     <>
                         <Text style={styles.modalText}>Falha na redefinição de senha</Text>
                         <Text style={styles.modalSmallText}>Por favor, tente novamente ou entre em contato com o suporte</Text>
@@ -142,7 +148,39 @@ export const ModalComponent: React.FC<CustomModalProps> = ({ visible, typeModal,
                             <TouchButton styleType='buttonSmallSolid' text='Tentar novamente' onPress={onClose} />
                         </View>
                     </>
-                )
+                );
+            case 'sucessfulRequest':
+                return (
+                    <>
+                        <Text style={styles.modalText}>Solicitação enviada</Text>
+                        <Text style={styles.modalSmallText}>Sua socilitação foi enviada, aguarde pela confirmação do responsável.</Text>
+                        <View style={styles.modalViewChoises}>
+                            <TouchButton styleType='buttonSmallSolid' text='Continuar' onPress={() => {
+                                onClose();
+                            }} />
+                        </View>
+                    </>
+                );
+            case 'faliedRequest':
+                return (
+                    <>
+                        <Text style={styles.modalText}>Falha ao realizar solicitação</Text>
+                        <Text style={styles.modalSmallText}>Não foi possível realizar a solicitação, tente novamente mais tarde.</Text>
+                        <View style={styles.modalViewChoises}>
+                            <TouchButton styleType='buttonSmallSolid' text='Continuar' onPress={onClose} />
+                        </View>
+                    </>
+                );
+            case 'faliedRequestAlreadyDone':
+                return (
+                    <>
+                        <Text style={styles.modalText}>Falha ao realizar solicitação</Text>
+                        <Text style={styles.modalSmallText}>Solicitação já existente. Aguardando a confirmação do responsável.</Text>
+                        <View style={styles.modalViewChoises}>
+                            <TouchButton styleType='buttonSmallSolid' text='Continuar' onPress={onClose} />
+                        </View>
+                    </>
+                );
             default:
                 return null;
         }
