@@ -1,1 +1,1 @@
-export type ModalType = 'autenticadedSucessfull' | 'autenticadedFallied' | 'modalInformation' | 'successfulEdition' | 'faliedEdition' | 'successfulResetPassword' | 'faliedResetPassword';
+export type ModalType = 'autenticadedSucessfull' | 'autenticadedFallied' | 'modalInformation' | 'successfulEdition' | 'faliedEdition' | 'successfulResetPassword' | 'faliedResetPassword' | 'sucessfulRequest' | 'faliedRequest' | 'faliedRequestAlreadyDone';
