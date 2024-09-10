@@ -13,8 +13,8 @@ export declare global {
       ListEvents: undefined;
       VaccinationRegisters: undefined;
       Profile: undefined;
-      DetailsEvent: undefined;
-      DetailsVaccine: undefined;
+      DetailsEvent: {idEvent: string};
+      DetailsVaccine: {idVaccine: string};
       EditProfile: undefined;
       VaccinationRequest: undefined;
     }
