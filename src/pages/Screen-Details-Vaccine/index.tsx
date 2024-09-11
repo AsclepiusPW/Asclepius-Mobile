@@ -1,10 +1,10 @@
 //Imports
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import { useRoute } from "@react-navigation/native";
 
 //Types
-import { arrayEvent } from "../../../utils/tests/arrayEvent";
-import { Event } from "../../../utils/types/typeEvent";
+import { infoVaccine } from "../../../utils/types/typeInfoVaccine";
 
 //Styles
 import styles from "./style";
@@ -13,42 +13,40 @@ import { Themes } from "../../../global/theme";
 //Components
 import EventComponent from "../../components/Event-Component";
 import PresentDetails from "../../components/Present-Details";
-import { infoVaccine } from "../../../utils/types/typeInfoVaccine";
-import { arrayInfoVaccines } from "../../../utils/tests/arrayInfoVaccine";
 import { NoRecordView } from "../../components/No-Record-View";
 
-type prop = {
-  vaccine?: string;
-};
+//Api
+import { Api } from "../../connection/axios";
 
-export const ScreenDetailsVaccine = ({ vaccine }: prop) => {
+export const ScreenDetailsVaccine = () => {
+
+  //Pegando informações da vacina pela requisição
+  const route = useRoute();
+  const { idVaccine } = route.params as { idVaccine: string };
+
   const [arrayInfo, setArrayInfo] = useState<infoVaccine | undefined>();
-  const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [noRecords, setNoRecords] = useState<boolean>(false);
 
   useEffect(() => {
-    setLoading(true);
-    setNoRecords(false);
+    const fetchVaccineIdApi = async () => {
+      try {
+        setLoading(true);
+        const response = await Api.get(`/vaccine/${idVaccine}`);
 
-    // Filtra a vacina pelo nome passado na prop
-    const selectedVaccine = arrayInfoVaccines.find(
-      (info) => info.name === vaccine //CORRIGIR
-    );
-    setArrayInfo(selectedVaccine);
+        setArrayInfo(response.data);
+        setNoRecords(response.data.length === 0);
 
-    // Filtra os eventos associados ao nome da vacina
-    const filteredEvents = arrayEvent.filter(
-      (event) => event.vaccine.id === vaccine //CORRIGIR
-    );
-    setEvents(filteredEvents);
-
-    if (filteredEvents.length === 0) {
-      setNoRecords(true);
+      } catch (error) {
+        console.log("Error ao procurar a vacina:", error);
+        setNoRecords(true);
+      }finally{
+        setLoading(false);
+      }
     }
 
-    setLoading(false);
-  }, [vaccine]);
+    fetchVaccineIdApi();
+  }, [idVaccine])
 
   return (
     <ScrollView>
@@ -62,7 +60,7 @@ export const ScreenDetailsVaccine = ({ vaccine }: prop) => {
           <>
             <PresentDetails
               description={arrayInfo.description}
-              contraindications={arrayInfo.contraindications}
+              contraindications={arrayInfo.contraIndication}
               details={[
                 {
                   iconName: "truck",
@@ -90,13 +88,14 @@ export const ScreenDetailsVaccine = ({ vaccine }: prop) => {
               {noRecords ? (
                 <NoRecordView title="Não Há Eventos Cadastrados" />
               ) : (
-                events.map((content, index) => (
+                arrayInfo.vaccinationCalendar?.map((content, index) => (
                   <EventComponent
                     key={index}
+                    idEvent={content.id}
                     date={content.date}
                     local={content.local}
                     places={content.places}
-                    vaccine={content.vaccine.name}
+                    vaccine={arrayInfo.name}
                     latitude={content.latitude} //Adicionei esses campos
                     longitude={content.longitude} //Adicionei esses campos
                   />
