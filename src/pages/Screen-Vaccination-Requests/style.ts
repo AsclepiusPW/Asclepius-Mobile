@@ -24,6 +24,25 @@ export const styles = StyleSheet.create({
         fontFamily: `${Themes.fonts.bold}`,
         borderBottomColor: `${Themes.colors.disabled}`
     },
+
+    messageEvent: {
+        position: 'absolute',
+        width: "65%",
+        height: 50,
+        right: 0,
+        top: 10,
+        backgroundColor: Themes.colors.greenSpringTiny,
+        borderTopLeftRadius: 20, 
+        padding: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 9999, // Certifica-se de que está sobre os outros elementos
+    },
+    messageText: {
+        color: Themes.colors.black,
+        fontSize: 16,
+    },
+
 });
 
 //Componentes

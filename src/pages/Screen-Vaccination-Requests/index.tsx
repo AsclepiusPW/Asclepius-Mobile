@@ -1,12 +1,13 @@
 //Importações
 import { useEffect, useState } from "react";
-import { ScrollView, View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import { ScrollView, View, Text, TouchableOpacity, ActivityIndicator, Animated } from "react-native";
 import React from "react";
 
 //Componentes
 import { HeaderApresentation } from "../../components/Header-Apresentation";
 import { RequestVaccination } from "../../components/Request-Vaccination";
 import { NoRecordView } from "../../components/No-Record-View";
+import { NotificationEvent } from "../../components/Notifcation-Event";
 
 //Testes
 import { VaccinationRequest } from "../../../utils/types/typeVaccinationRequest";
@@ -29,6 +30,8 @@ export const ScreenVaccinationRequest = () => {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [noRecords, setNoRecords] = useState<boolean>(false);
+
+    const [notificationVisible, setNotificationVisible] = useState<boolean>(false); 
 
     useEffect(() => {
         //Pegando os dados do usuário
@@ -124,6 +127,7 @@ export const ScreenVaccinationRequest = () => {
                             vaccinationRequest?.map((content, index) => (
                                 <RequestVaccination
                                     key={index}
+                                    idEvent={content.id}
                                     dateRequest={content.date}
                                     nameEvent={content.calendar.local}
                                     dateEvent={content.calendar.date}
@@ -133,12 +137,14 @@ export const ScreenVaccinationRequest = () => {
                                     latitude={content.calendar?.latitude}
                                     longitude={content.calendar?.longitude}
                                     responseEvent={content.status}
+                                    onRemove={setNotificationVisible}
                                 />
                             ))
                         )}
                     </VaccinationRequestList>
                 )}
 
+            { notificationVisible && <NotificationEvent text="Solicitação removida"/>}
             </ContainerVaccinationRequest>
         </ScrollView>
     )
