@@ -16,6 +16,7 @@ interface AuthContextData {
     loading: boolean;
     signIn(data: { userEmail: string; userPassword: string }): Promise<void>;
     signOut(): void;
+    checkTokenValidity(token: string): Promise<void>;
 };
 
 //Criando o contexto
@@ -44,13 +45,42 @@ export const AuthProvider: React.FC<propsContext> = ({ children }) => {
                 setUser(storedUser);
 
                 Api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+                
+                // Verifica a validade do token
+                await checkTokenValidity(storedToken);
             }
-
+            
             setLoading(false); //Termina de carregar após a verificação da autenticação do usuário
         }
 
         loadStorageData();
     }, []);
+
+    //Função para verificar a validade do token Só posso fazer a função se o token existir
+    const checkTokenValidity = async (token: string) => {
+        try {
+            const response = await Api.get('/user/authentication/isValid', {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Passa o token no cabeçalho
+                }
+            });
+    
+            if (response.status === 200) {
+                // Token é válido, nada a fazer
+                return;
+            } else if (response.status === 401) {
+                // Token inválido, fazer logout
+                await signOut();
+            } else {
+                // Outros erros de status
+                throw new Error(`Erro ao verificar o token: ${response.status}`);
+            }
+        } catch (error) {
+            const errorMessage = handleAuthContxtErrors(error);
+            // Exibe a mensagem de erro ou toma outras ações se necessário
+            await signOut(); // Desconecta o usuário em caso de erro
+        }
+    };
 
     //Função de login
     const signIn = async (data: { userEmail: string; userPassword: string }) => {
@@ -112,7 +142,7 @@ export const AuthProvider: React.FC<propsContext> = ({ children }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, signIn, signOut, token, user, loading }}>
+        <AuthContext.Provider value={{ isAuthenticated, signIn, signOut, token, user, loading, checkTokenValidity }}>
             {children}
         </AuthContext.Provider>
     )

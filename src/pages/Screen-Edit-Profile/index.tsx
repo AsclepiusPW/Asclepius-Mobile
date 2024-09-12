@@ -34,7 +34,7 @@ import { User } from "../../../utils/types/typeUser";
 
 export const ScreenEditProfile = () => {
     const { userData, loadDataUser, updateUser } = useUser(); //Buscando dados do usuário
-    const { token } = useAuth(); //Buscando o token do usuário
+    const { token, checkTokenValidity } = useAuth(); //Buscando o token do usuário
 
     //States
     const [profileImage, setProfileImage] = useState<string | null>(null); //State para armazenar a aimagem
@@ -83,6 +83,8 @@ export const ScreenEditProfile = () => {
     const onSubmit = async (data: any) => {
 
         setLoading(true);
+        if (!token) return;
+
         try {
             //Criando objeto de atualização de usuário
             const updateUserData: User = {
@@ -97,13 +99,14 @@ export const ScreenEditProfile = () => {
                 vaccination: userData?.vaccination
             };
 
+            await checkTokenValidity(token); //Validando que o token é válido
+
             const response = await Api.put("/user/update", updateUserData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
 
-            console.log(response.data, response.status);
             if (response.status === 201) {
                 await updateUser(updateUserData); //Atualizar o histórico do user
                 setModalType("successfulEdition");
@@ -164,8 +167,12 @@ export const ScreenEditProfile = () => {
             name: `profile-${dateUpload}.jpg`,
         } as any);
 
+        if (!token) return;
 
         try {
+            await checkTokenValidity(token); //Validando que o token é válido
+
+            //Requisição
             const response = await Api.patch("/user/upload", formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,

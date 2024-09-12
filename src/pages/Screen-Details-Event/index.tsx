@@ -32,7 +32,7 @@ import { useUser } from "../../context/UserContext";
 export const ScreenDetailsEvent = () => {
   //Contextos
   const { eventData, loadingEvent } = userEvent();
-  const { token } = useAuth(); //Token do usuário
+  const { token, checkTokenValidity } = useAuth(); //Token do usuário
   const { userData, updateUser } = useUser();
 
   //Pegando o id da requisição
@@ -80,8 +80,11 @@ export const ScreenDetailsEvent = () => {
   //Função para realizar a solicitação de reseva:
   const handleReservationRequest = async () => {
     if (!event) return;
+    if (!token) return; 
 
     try {
+      await checkTokenValidity(token); //Validando que o token é válido
+
       setLoading(true);
       // Pega a data e hora atuais no formato ISO (padrão UTC)
       const currentDate = new Date().toISOString();
@@ -105,7 +108,6 @@ export const ScreenDetailsEvent = () => {
         await handleUpdateRequestEventsUser();
       }
     } catch (error) {
-      console.error("Erro ao solicitar a reserva:", error);
       handleRequestErrors(error); //Função para tratar erros
     } finally {
       setLoading(false);
