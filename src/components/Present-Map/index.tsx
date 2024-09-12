@@ -3,9 +3,24 @@ import React, { useState, useEffect } from "react";
 import { View, Alert, StyleProp, ViewStyle } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
+import { useNavigation } from "@react-navigation/native";
+import marker from "../../../images/doctor.png";
 
 //Estilizações
 import { styles } from "./style";
+
+//Contextos
+import { userEvent } from "../../context/EventContext";
+import { Event } from "../../../utils/types/typeEvent";
+import { Themes } from "../../../global/theme";
+
+//Types
+type eventMark = {
+  id: string,
+  latitude: number,
+  longitude: number,
+  title: string,
+}
 
 //props
 interface props {
@@ -14,29 +29,17 @@ interface props {
   zoomEnable?: boolean;
   scrollEnable?: boolean;
   showLocationButtom?: boolean;
+  events?: Event[];
   pattent?: keyof typeof styles; //Se tem a possibilidade de reutiliza esse código estabelecendo uma nova estilização com novos valores
 }
 
-export const PresentMap: React.FC<props> = ({
-  latitude,
-  longitude,
-  zoomEnable = true,
-  scrollEnable = true,
-  showLocationButtom = true,
-  pattent = "container",
-}) => {
+export const PresentMap: React.FC<props> = ({ latitude, longitude, zoomEnable = true, scrollEnable = true, showLocationButtom = true, pattent = "container", events }) => {
+  const navigate = useNavigation();
+
   const mapStyle = styles[pattent] as StyleProp<ViewStyle>; //Estilização
 
-  const [currentLocation, setCurrentLocation] = useState<{
-    latitude: number;
-    longitude: number;
-  } | null>(null);
+  const [currentLocation, setCurrentLocation] = useState<{ latitude: number; longitude: number; } | null>(null);
 
-  // Seria interresante adicionar uma função para listar no mapa do usuário
-  // uma lista de eventos próximos a sua localização
-
-  //O ideal é que isso já seja pego ao adentrar o sistema, somente exemplo
-  //Depois refatorar
   useEffect(() => {
     (async () => {
       if (!latitude || !longitude) {
@@ -94,6 +97,21 @@ export const PresentMap: React.FC<props> = ({
             title="Minha Localização"
           />
         ) : null}
+
+        {/* Exibir os eventos próximos como marcadores */}
+        {events &&
+          events.map((event) => (
+            <Marker
+              key={event.id}
+              coordinate={{
+                latitude: parseFloat(event.latitude),
+                longitude: parseFloat(event.longitude),
+              }}
+              title={event.local}
+              onPress={() => navigate.navigate("DetailsEvent", {idEvent: event.id})}
+              icon={marker}
+            />
+          ))}
       </MapView>
     </View>
   );

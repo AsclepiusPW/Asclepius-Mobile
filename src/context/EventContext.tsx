@@ -7,6 +7,9 @@ import { Api } from "../connection/axios";
 //Type
 import { Event } from "../../utils/types/typeEvent";
 
+//Contexto de autenticação
+import { useAuth } from "./AuthContext";
+
 //Definição do contexto
 interface EventContextData {
     eventData: Event[];
@@ -24,6 +27,7 @@ interface EventContextProps {
 
 //Provedor do contexto
 export const EventProvider: React.FC<EventContextProps> = ({ children }) => {
+    const {token} = useAuth();
     const [eventData, setEventData] = useState<Event[]>([]);
     const [loadingEvent, setLoadingEvent] = useState<boolean>(false);
 
@@ -45,7 +49,7 @@ export const EventProvider: React.FC<EventContextProps> = ({ children }) => {
     // Coleta as informações automáticamente
     useEffect(() => {
         loadEventData(); // Carrega os eventos automaticamente
-    }, []);
+    }, [token]);
 
     return (
         <EventContext.Provider value={{ eventData, loadingEvent, loadEventData }}>

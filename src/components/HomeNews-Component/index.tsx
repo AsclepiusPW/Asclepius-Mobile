@@ -16,13 +16,8 @@ interface props {
 }
 
 export const NewsComponent: React.FC<props> = ({title, description, image}) => {
-    
-    const handleChangeNews = () => {
-        Alert.alert("Clicou na notícia")
-    }
-    
     return(
-        <TouchableOpacity style={styles.container} onPress={handleChangeNews}>
+        <View style={styles.container}>
             <View style={styles.containerImage}>
                 <Image source={image ? image : news} style={styles.image}/>
             </View>
@@ -36,6 +31,6 @@ export const NewsComponent: React.FC<props> = ({title, description, image}) => {
                     {description ? description : "Sem descrição"}
                 </Text>
             </View>
-        </TouchableOpacity>
+        </View>
     )
 }

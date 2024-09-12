@@ -1,6 +1,7 @@
 //Importações
 import React, { useState, useEffect } from "react";
-import { ScrollView, View, Text, ActivityIndicator } from "react-native";
+import { ScrollView, View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
+import { getDistance } from 'geolib';
 
 //Componentes
 import { HeaderApresentation } from "../../components/Header-Apresentation"
@@ -10,15 +11,21 @@ import { VaccinationRequestComponent } from "../../components/Vaccination-Reques
 import { UpdatingComponent } from "../../components/Updating-Component";
 
 //Estilização
-import { ContainerProfile } from "./style"
+import { ContainerProfile, ContainerMap, ViewMap, ViewTitle, styles } from "./style"
+import Icon from 'react-native-vector-icons/Feather';
 
 //Contexto
 import { useUser } from "../../context/UserContext";
+import { userEvent } from "../../context/EventContext";
+import { Event } from "../../../utils/types/typeEvent";
+import { Themes } from "../../../global/theme";
 
 export const ScreenProfile = () => {
     const { userData, loadDataUser } = useUser();
+    const { eventData } = userEvent(); // Adicionando contexto de eventos
 
     const [loading, setLoading] = useState<boolean>(false);
+    const [nearbyEvents, setNearbyEvents] = useState<Event[]>([]); //Eventos próximos do usuário
 
     //Pegando informações do usuário do banco de dados
     useEffect(() => {
@@ -28,6 +35,26 @@ export const ScreenProfile = () => {
             setLoading(false)
         }
     }, [userData]);
+
+    //Pegando as informações dos eventos
+    useEffect(() => {
+        if (userData && eventData && userData.latitude && userData.longitude) {
+            const userLat = userData.latitude;
+            const userLon = userData.longitude;
+
+            const filteredEvents = eventData.filter(event => {
+                const eventLat = parseFloat(event.latitude);
+                const eventLon = parseFloat(event.longitude);
+                const distance = getDistance(
+                    { latitude: userLat, longitude: userLon },
+                    { latitude: eventLat, longitude: eventLon }
+                );
+                return distance <= 10000; // 10 km
+            });
+
+            setNearbyEvents(filteredEvents);
+        }
+    }, [userData, eventData]);
 
     return (
         <ScrollView>
@@ -48,12 +75,24 @@ export const ScreenProfile = () => {
                             userPhone={userData ? userData.telefone : "User Not found"}
                         />
 
-                        <PresentMap
-                            zoomEnable={false}
-                            scrollEnable={false}
-                            latitude={userData && userData.latitude !== undefined ? userData.latitude.toString() : ""}
-                            longitude={userData && userData.longitude !== undefined ? userData.longitude.toString() : ""}
-                        />
+                        <ContainerMap>
+                            <ViewTitle>
+                                <Text style={styles.detailsTitle}>Sua localização</Text>
+                            
+                                <TouchableOpacity>
+                                    <Icon name="edit" size={20} color={`${Themes.colors.black}`} />
+                                </TouchableOpacity>
+                            </ViewTitle>
+                            <ViewMap>
+                                <PresentMap
+                                    zoomEnable={true}
+                                    scrollEnable={true}
+                                    latitude={userData && userData.latitude !== undefined ? userData.latitude.toString() : ""}
+                                    longitude={userData && userData.longitude !== undefined ? userData.longitude.toString() : ""}
+                                    events={nearbyEvents}
+                                />
+                            </ViewMap>
+                        </ContainerMap>
 
                         { 
                             userData?.requestReservation && userData?.requestReservation?.length > 0 && (
