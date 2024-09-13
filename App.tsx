@@ -1,12 +1,19 @@
 //Importações
 import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider } from 'styled-components';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import React from "react";
+
+//Telas
+import { StackNavigation } from './src/navigation/StackNavigation'; 
+
+//Contextos
+import { AuthProvider } from './src/context/AuthContext';
+import { UserProvider } from './src/context/UserContext';
+import { EventProvider } from './src/context/EventContext';
 
 //Componentes
 import { Themes } from './global/theme';
-
-//Test de styled-component
-import styled from 'styled-components/native';
 
 //Importação de fonts
 import useCustomFonts from "./global/useFonts";
@@ -20,26 +27,22 @@ export default function App() {
   }
 
   return (
-    <ThemeProvider theme={Themes}>
-      <ContainerTest>
-      <TextTest>Bem vindo ao Asclepius</TextTest>
-      <StatusBar style="auto" />
-    </ContainerTest>
-    </ThemeProvider>
+    <SafeAreaView style={{flex: 1, backgroundColor:`${Themes.colors.bacgroundScreens}`}}>
+      <ThemeProvider theme={Themes}>
+        <StatusBar
+          backgroundColor="transparent"
+          translucent
+        />
+        
+        <AuthProvider>
+          <UserProvider>
+            <EventProvider>
+              <StackNavigation/>
+            </EventProvider>
+          </UserProvider>
+        </AuthProvider>
+
+      </ThemeProvider>
+    </SafeAreaView>
   );
 }
-
-//Depois apagar essas estilizações
-const ContainerTest = styled.View`
-  background-color: ${Themes.colors.greenAcqua};
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const TextTest = styled.Text`
-  color: ${Themes.colors.white};
-  font-family: ${Themes.fonts.medium};
-`;

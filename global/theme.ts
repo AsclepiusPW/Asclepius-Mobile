@@ -3,7 +3,9 @@ export const Themes = {
     
       //Cores padrões
       white:"#FFFFFF",
-      black: "#000000", 
+      black: "#000000",
+      bacgroundScreens: "#ECEBE8",
+      disabled: "#C9C9C9",
 
       //Verdes
       greenDark:"#2C6975",
