@@ -4,10 +4,17 @@ import styles from "./style";
 import { infoVaccine } from "../../../utils/types/typeInfoVaccine";
 import React from "react";
 
-const VaccineInformation = ({ manufacturer, type, title }: infoVaccine) => {
+//props
+interface props {
+  manufacturer: string, 
+  type: string, 
+  name: string,
+}
+
+const VaccineInformation = ({ manufacturer, type, name }: props) => {
   return (
     <View>
-      <TextComponent title={title} textStyles={{ maxWidth: "80%" }} />
+      <TextComponent title={name} textStyles={{ maxWidth: "80%" }} />
       <TextComponent
         subTitle="Fabricante"
         text={manufacturer}

@@ -3,6 +3,9 @@ import React from 'react';
 import { View, Text, Modal, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
+//Contexto
+import { useAuth } from '../../context/AuthContext';
+
 // Componentes
 import { TouchButton } from '../Touch-Button';
 
@@ -14,15 +17,16 @@ import { styles } from "./style";
 import Icon from 'react-native-vector-icons/AntDesign';
 
 // Props
-type ModalType = 'autenticadedSucessfull' | 'autenticadedFallied' | 'modalInformation' | 'successfulEdition' | 'faliedEdition';
-
+import { ModalType } from '../../../utils/types/typeModal'; //Importando tipo, presente em utils/types
 interface CustomModalProps {
     visible: boolean;
     typeModal: ModalType;
     onClose: () => void;
+    onModalClose?: () => void;
 }
 
-export const ModalComponent: React.FC<CustomModalProps> = ({ visible, typeModal, onClose }) => {
+export const ModalComponent: React.FC<CustomModalProps> = ({ visible, typeModal, onClose, onModalClose }) => {
+    const { signOut } = useAuth();
     const navigation = useNavigation();
 
     const handleEditProfile = () => {
@@ -30,11 +34,9 @@ export const ModalComponent: React.FC<CustomModalProps> = ({ visible, typeModal,
         navigation.navigate('EditProfile');
     };
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         onClose();
-        navigation.navigate("Initial"); //Leva para a tela inical
-        // Adicione a lógica para sair do sistema aqui
-        // Exemplo: Clear authentication tokens, navigate to login screen, etc.
+        await signOut();
     };
 
     //Função para controle do icon
@@ -49,6 +51,16 @@ export const ModalComponent: React.FC<CustomModalProps> = ({ visible, typeModal,
             case 'successfulEdition':
                 return 'like1';
             case 'faliedEdition':
+                return 'dislike1';
+            case 'successfulResetPassword':
+                return 'like1';
+            case 'faliedResetPassword':
+                return 'dislike1';
+            case 'sucessfulRequest':
+                return 'like1';
+            case 'faliedRequest':
+                return 'dislike1';
+            case 'faliedRequestAlreadyDone':
                 return 'dislike1';
             default:
                 return 'questioncircle'; // Adiciona um ícone padrão
@@ -104,13 +116,68 @@ export const ModalComponent: React.FC<CustomModalProps> = ({ visible, typeModal,
                         </View>
                     </>
                 );
-            case 'faliedEdition' :
+            case 'faliedEdition':
                 return (
                     <>
                         <Text style={styles.modalText}>Falha na edição</Text>
                         <Text style={styles.modalSmallText}>Por favor, tente novamente ou entre em contato com o suporte</Text>
                         <View style={styles.modalViewChoises}>
                             <TouchButton styleType='buttonSmallSolid' text='Tentar novamente' onPress={onClose} />
+                        </View>
+                    </>
+                );
+            case 'successfulResetPassword':
+                return (
+                    <>
+                        <Text style={styles.modalText}>Senha redefinida com sucesso</Text>
+                        <Text style={styles.modalSmallText}>Clique em Continuar para seguir para a página de login</Text>
+                        <View style={styles.modalViewChoises}>
+                            <TouchButton styleType='buttonSmallSolid' text='Continuar' onPress={() => {
+                                onClose();
+                                navigation.navigate("Login");
+                            }} />
+                        </View>
+                    </>
+                );
+            case 'faliedResetPassword':
+                return (
+                    <>
+                        <Text style={styles.modalText}>Falha na redefinição de senha</Text>
+                        <Text style={styles.modalSmallText}>Por favor, tente novamente ou entre em contato com o suporte</Text>
+                        <View style={styles.modalViewChoises}>
+                            <TouchButton styleType='buttonSmallSolid' text='Tentar novamente' onPress={onClose} />
+                        </View>
+                    </>
+                );
+            case 'sucessfulRequest':
+                return (
+                    <>
+                        <Text style={styles.modalText}>Solicitação enviada</Text>
+                        <Text style={styles.modalSmallText}>Sua socilitação foi enviada, aguarde pela confirmação do responsável.</Text>
+                        <View style={styles.modalViewChoises}>
+                            <TouchButton styleType='buttonSmallSolid' text='Continuar' onPress={() => {
+                                onClose();
+                            }} />
+                        </View>
+                    </>
+                );
+            case 'faliedRequest':
+                return (
+                    <>
+                        <Text style={styles.modalText}>Falha ao realizar solicitação</Text>
+                        <Text style={styles.modalSmallText}>Não foi possível realizar a solicitação, tente novamente mais tarde.</Text>
+                        <View style={styles.modalViewChoises}>
+                            <TouchButton styleType='buttonSmallSolid' text='Continuar' onPress={onClose} />
+                        </View>
+                    </>
+                );
+            case 'faliedRequestAlreadyDone':
+                return (
+                    <>
+                        <Text style={styles.modalText}>Falha ao realizar solicitação</Text>
+                        <Text style={styles.modalSmallText}>Solicitação já existente. Aguardando a confirmação do responsável.</Text>
+                        <View style={styles.modalViewChoises}>
+                            <TouchButton styleType='buttonSmallSolid' text='Continuar' onPress={onClose} />
                         </View>
                     </>
                 );
@@ -124,7 +191,10 @@ export const ModalComponent: React.FC<CustomModalProps> = ({ visible, typeModal,
             visible={visible}
             transparent={true}
             animationType="slide"
-            onRequestClose={onClose}
+            onRequestClose={() => {
+                onClose();
+                if (onModalClose) onModalClose();
+            }}
         >
             <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>

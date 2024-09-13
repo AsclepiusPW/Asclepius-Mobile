@@ -16,10 +16,12 @@ export const styles = StyleSheet.create({
     },
 
     requestHeader:{
-        width: '100%',
+        width: '95%',
         flexDirection: 'row',
         alignItems: 'flex-start',
         justifyContent: 'center',
+        borderBottomWidth: 3,
+        borderBottomColor: `${Themes.colors.greenAcqua}`
     },
 
     requestHeaderTitle:{
@@ -28,8 +30,6 @@ export const styles = StyleSheet.create({
         fontSize: 18,
         paddingBottom: 5,
         color: `${Themes.colors.greenAcqua}`,
-        borderBottomWidth: 3,
-        borderBottomColor: `${Themes.colors.greenAcqua}`
     },
 
     requestMap: {

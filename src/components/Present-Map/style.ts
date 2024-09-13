@@ -7,6 +7,7 @@ export const styles = StyleSheet.create({
     width: "95%",
     height: 520,
     borderRadius: 20,
+    overflow: "hidden",
   },
 
   containerMapProfile: {

@@ -1,5 +1,5 @@
 //Importações
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -13,11 +13,10 @@ import userUndefined from "../../../images/user-undefined.jpg";
 interface props {
     userName?: string,
     userEmail?: string,
-    userImage?: string,
     profileImage?: string | null //Para a imagem que será recuperada do dispositivo
 }
 
-export const SmallDetailsProfile: React.FC<props> = ({ userName, userImage, userEmail, profileImage }) => {
+export const SmallDetailsProfile: React.FC<props> = ({ userName, userEmail, profileImage }) => {
     return (
         <LinearGradient
             colors={['#05E9AC', '#2C6975']}
@@ -27,7 +26,7 @@ export const SmallDetailsProfile: React.FC<props> = ({ userName, userImage, user
         >
             <View style={styles.circleDetails}>
                 <Image
-                    source={profileImage ? { uri: profileImage } : (userImage ? { uri: userImage } : userUndefined)}
+                    source={profileImage ? { uri: profileImage } : userUndefined}
                     style={styles.circleImage}
                 />
             </View>

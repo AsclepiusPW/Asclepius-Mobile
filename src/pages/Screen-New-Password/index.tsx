@@ -1,25 +1,24 @@
-// Imports
+//Importações
 import React, { useState } from "react";
-import Yup from "yup";
-import { View, Image, Alert, Text, ActivityIndicator } from "react-native";
+import { Image, Text, ActivityIndicator, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { AxiosError } from "axios";
-
-//Context
-import { useAuth } from "../../context/AuthContext";
 
 //Validation
-import { LoginValidationSchema } from "../../../global/validationForm";
+import { validationSchemaNewPassword } from "../../../global/validationForm";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, Controller } from 'react-hook-form';
+
+//Api
+import { Api } from "../../connection/axios";
+import { AxiosError } from "axios";
 
 // Components
 import { TouchButton } from "../../components/Touch-Button";
 import { InputForm } from "../../components/Input-Form";
 import { ModalComponent } from "../../components/Modal-Component";
 
-// Styles
-import { LoginButtonSubmit, ContainerLogin, LoginForm, NewPassword, TouchSNewPassword, SignUpText, TouchSignUp } from "./style";
+//Styles
+import { ContainerForm, NewPassordForm, ButtonSubmit, SignUpText, TouchSignUp } from "./style";
 import { Themes } from "../../../global/theme";
 
 //Imagens
@@ -28,13 +27,11 @@ import AsclepiusLogo from "../../../images/logo-color-cropped.png";
 //Types
 import { ModalType } from "../../../utils/types/typeModal";
 
-export const ScreenLogin = () => {
-    const { signIn } = useAuth(); //Context
 
+export const ScreenNewPassword = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [modalVisible, setModalVisible] = useState(false);
-    const [modalType, setModalType] = useState<ModalType>('autenticadedSucessfull'); // Estado para o tipo do modal
-    const [visibleNewPassword, setVisibleNewPassword] = useState<boolean>(false);
+    const [modalType, setModalType] = useState<ModalType>('successfulResetPassword'); // Estado para o tipo do modal
 
     //Constantes para controle do modal
     const handleOpenModal = () => setModalVisible(true); //Função para abrir o modal
@@ -48,56 +45,70 @@ export const ScreenLogin = () => {
         defaultValues: {
             userEmail: "",
             userPassword: "",
+            userConfirmPassword: "",
         },
-        resolver: yupResolver(LoginValidationSchema),
+        resolver: yupResolver(validationSchemaNewPassword),
     });
 
-    //Função de submisão de formulário
-    const onSubmit = async (data: { userEmail: string, userPassword: string }) => {
-        setLoading(true); //Carregar
+    //Função de submmissão de formulário
+    const onSubmit = async (data: {userEmail: string, userPassword: string, userConfirmPassword: string}) => {
+        setLoading(true);
+
         try {
-            await signIn(data); // Chama a função signIn do contexto de autenticação
-            setModalType("autenticadedSucessfull"); // Define o tipo de modal para sucesso
+            const response = await Api.patch("/user/resetPassword", {
+                email: data.userEmail,
+                password: data.userPassword,
+                confirmPassword: data.userConfirmPassword,
+            });
+
+            if (response.status === 200) {
+                setModalType("successfulResetPassword");
+            }else{
+                setModalType("faliedResetPassword");
+            }
         } catch (error) {
-            // Exibe um alerta em caso de falha
-            setModalType('autenticadedFallied'); // Define o tipo de modal para falha
-            handleLogInErrors(error);
-        } finally {
+            console.log(error);
+            setModalType("faliedResetPassword");
+            handleResetPasswordErros(error);
+        }finally{
             handleOpenModal();
             setLoading(false);
         }
-    };
+    }
 
-    //Função de controle de erros do backend
-    const handleLogInErrors = (error: unknown) => {
-        if (error instanceof Error) {
-            const errorMessage = error.message;
+    //Função de erros
+    const handleResetPasswordErros = (error: unknown) => {
+        if (error instanceof AxiosError) {
+            //Possíveis erros do backend
+            const status = error.response?.status;
+            const backendErrors = error.response?.data;
 
-            // Atualiza a mensagem de erro conforme necessário
-            if (errorMessage.includes("Invalid")) {
-                setError("userPassword", {
-                    message: "Senha inválida"
-                });
-
-                setVisibleNewPassword(true); //Fazendo com o componente de mudança de senha seja visivel
-            } else if (errorMessage.includes("not exist")) {
-                setError("userEmail", {
-                    message: "Usuário não existe"
-                });
+            if (status === 404 && backendErrors) {
+                let errorMessage = String(backendErrors.error);
+                
+                //Há somente um erro do backend que a validação não consegue resolver por si só
+                if (errorMessage.includes("Not existing user")) {
+                    setError("userEmail", { //Se usuário não existir
+                        message: "E-mail não existente"
+                    });
+                }
+            
             } else {
-                // Exibe uma mensagem de erro genérica
-                console.error("Erro desconhecido", errorMessage)
+                Alert.alert("Erro", "Ocorreu um erro ao criar a conta. Tente novamente.");
             }
+        } else {
+            console.error("Erro inesperado:", (error as Error).message);
+            Alert.alert("Erro", "Ocorreu um erro inesperado. Tente novamente mais tarde.");
         }
     }
 
     return (
-        <ContainerLogin>
+        <ContainerForm>
             <Image source={AsclepiusLogo} style={{ width: "80%", resizeMode: "contain" }} />
 
             {loading && <ActivityIndicator size="large" color={`${Themes.colors.greenDark}`} />}
 
-            <LoginForm>
+            <NewPassordForm>
                 <Controller
                     control={control}
                     name="userEmail"
@@ -130,22 +141,30 @@ export const ScreenLogin = () => {
                 />
                 {errors.userPassword && <Text style={{ color: `${Themes.colors.redHot}` }}>{errors.userPassword.message}</Text>}
 
-                {/* Componente só visivel quando erro de senha encontrado */}
-                {visibleNewPassword && (
-                    <NewPassword>
-                        Esqueceu sua senha?
-                        <TouchSNewPassword onPress={() => navigation.navigate("ResetPassword")}>Mudar senha!</TouchSNewPassword>
-                    </NewPassword>
-                )}
+                <Controller
+                    control={control}
+                    name="userConfirmPassword"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                        <InputForm
+                            icon="lock"
+                            placeholder="Confirmar senha"
+                            value={value}
+                            onChangeText={onChange}
+                            onBlur={onBlur}
+                            secureTextEntry={true}
+                        />
+                    )}
+                />
+                {errors.userConfirmPassword && <Text style={{ color: `${Themes.colors.redHot}` }}>{errors.userConfirmPassword.message}</Text>}
 
-                <LoginButtonSubmit>
+                <ButtonSubmit>
                     <TouchButton
                         styleType="buttonLargerSolid"
-                        text="Log In"
+                        text="Redefinir senha"
                         onPress={handleSubmit(onSubmit)}
                     />
-                </LoginButtonSubmit>
-            </LoginForm>
+                </ButtonSubmit>
+            </NewPassordForm>
 
             <SignUpText>
                 Não tem uma conta ainda?
@@ -154,6 +173,7 @@ export const ScreenLogin = () => {
 
             {/* Modal para opções */}
             <ModalComponent visible={modalVisible} onClose={handleCloseModal} typeModal={modalType} />
-        </ContainerLogin>
-    );
+
+        </ContainerForm>
+    )
 }

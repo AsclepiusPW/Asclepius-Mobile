@@ -14,41 +14,67 @@ import styles from "./style";
 
 //Types
 import { Event } from "../../../utils/types/typeEvent";
-import { arrayEvent } from "../../../utils/tests/arrayEvent";
+
+//EventContext
+import { userEvent } from "../../context/EventContext";
 
 export const ScreenEvent = () => {
-  const [event, setEvent] = useState<Event[]>(arrayEvent);
+  //Pegando as informações que necessito
+  const { eventData, loadingEvent } = userEvent();
+
+  const [event, setEvent] = useState<Event[]>([]); //Dados mutáveis localmente
+  const [allEvent, setAllEvent] = useState<Event[]>([]); //Dados vindos da API
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [noRecords, setNoRecords] = useState<boolean>(false);
-  const [dateEvent, setDateEvent] = useState<string[]>(
-    arrayEvent.map((event) => event.dateEvent)
-  );
+
+  const [dateEvent, setDateEvent] = useState<string[]>([]);
 
   const searchEvent = (event: string) => {
     setSearchQuery(event.toLowerCase());
   };
 
+  // Carregando os dados do contexto na montagem do componente
+  useEffect(() => {
+    if (eventData.length > 0) {
+      setLoading(loadingEvent);
+      setAllEvent(eventData);
+      setEvent(eventData);
+
+      // Convertendo as datas para o formato 'YYYY-MM-DD'
+      const dateEvents = eventData.map(
+        (event: Event) => event.date.slice(0, 10) // Extrai a parte da data 'YYYY-MM-DD'
+      );
+      setDateEvent(dateEvents);
+
+      // Verificando se existem eventos
+      setNoRecords(eventData.length === 0);
+    } else {
+      setNoRecords(true);
+      setLoading(false);
+    }
+  }, [eventData]);
+
+  //Effect de busca de eventos
   useEffect(() => {
     setLoading(true);
     setNoRecords(false);
 
     setTimeout(() => {
       if (searchQuery === "") {
-        setEvent(arrayEvent);
+        setEvent(allEvent);
         setNoRecords(false);
       } else {
-        const searchEvent = arrayEvent.filter((event) =>
-          event.localName.toLowerCase().includes(searchQuery)
+        const searchEvent = allEvent.filter((event) =>
+          event.local.toLowerCase().includes(searchQuery)
         );
-        console.log(searchEvent);
 
         setEvent(searchEvent);
         setNoRecords(searchEvent.length === 0);
       }
       setLoading(false);
     }, 1000);
-  }, [searchQuery]);
+  }, [searchQuery, allEvent]);
 
   return (
     <ScrollView>
@@ -78,10 +104,11 @@ export const ScreenEvent = () => {
               event.map((content, index) => (
                 <EventComponent
                   key={index}
-                  dateEvent={content.dateEvent}
-                  localName={content.localName}
-                  vacancies={content.vacancies}
-                  vacineName={content.vacineName}
+                  idEvent={content.id}
+                  date={content.date}
+                  local={content.local}
+                  places={content.places}
+                  vaccine={content.vaccine.name}
                   latitude={content.latitude}
                   longitude={content.longitude}
                 />

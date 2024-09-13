@@ -13,16 +13,24 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import { styles } from "./style";
 import { Themes } from "../../../global/theme";
 
-export const VaccinationRequest = () => {
+//Types
+import { VaccinationRequest } from "../../../utils/types/typeVaccinationRequest";
+
+//Props
+interface props {
+    requestVaccination?: VaccinationRequest[];
+}
+
+export const VaccinationRequestComponent: React.FC<props> = ({ requestVaccination }) => {
     //Const de navegação
     const navigation = useNavigation();
-    
-    return(
+
+    return (
         <View style={styles.container}>
             <View style={styles.containerApresentation}>
                 <Text style={styles.apresentationText}>Solicitações de Vacinação</Text>
 
-                
+
                 <TouchableOpacity style={styles.buttonPress} onPress={() => navigation.navigate("VaccinationRequest")}>
                     <Text>Ver mais</Text>
                     <Icon name="pluscircleo" size={15} color={`${Themes.colors.black}`} />
@@ -31,17 +39,23 @@ export const VaccinationRequest = () => {
 
             <View style={styles.latestRequestVacination}>
 
-                <ItemVaccinationRequest
-                    // key="request one"
-                    place="Hospital Arcanjo Gabriel"
-                    data="02/ 08/ 2024"
-                    responsible="Dr. Carlos Miguel"
-                    vacancies="45"
-                    vaccine="Vacinada da Gripe"
-                    accepted={true}
-                />
-
-                <ItemVaccinationRequest/>
+                {requestVaccination && requestVaccination.length > 0 ? (
+                    requestVaccination
+                        .slice(-2) // Pega até os dois últimos elementos do array
+                        .map((request, index) => (
+                            <ItemVaccinationRequest
+                                key={index}
+                                place={request.calendar.local}
+                                data={request.date}
+                                responsible={request.calendar.responsible}
+                                vacancies={request.calendar.places}
+                                vaccine={request.calendar.vaccine.name}
+                                accepted={request.status}
+                        />
+                        ))
+                ) : (
+                    <Text>Nenhuma solicitação encontrada</Text> // Mensagem alternativa se o array estiver vazio ou indefinido
+                )}
             </View>
         </View>
     )

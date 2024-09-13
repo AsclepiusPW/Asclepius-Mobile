@@ -7,6 +7,11 @@ import React from "react";
 //Telas
 import { StackNavigation } from './src/navigation/StackNavigation'; 
 
+//Contextos
+import { AuthProvider } from './src/context/AuthContext';
+import { UserProvider } from './src/context/UserContext';
+import { EventProvider } from './src/context/EventContext';
+
 //Componentes
 import { Themes } from './global/theme';
 
@@ -29,7 +34,13 @@ export default function App() {
           translucent
         />
         
-        <StackNavigation/>
+        <AuthProvider>
+          <UserProvider>
+            <EventProvider>
+              <StackNavigation/>
+            </EventProvider>
+          </UserProvider>
+        </AuthProvider>
 
       </ThemeProvider>
     </SafeAreaView>

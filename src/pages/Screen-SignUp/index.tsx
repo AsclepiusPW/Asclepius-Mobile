@@ -1,14 +1,21 @@
 // Imports
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Yup from "yup";
 import * as Location from 'expo-location';
-import { View, Image, Alert, Text } from "react-native";
+import { View, Image, Alert, Text, ActivityIndicator } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+
+//Contexto
+import { useAuth } from "../../context/AuthContext";
+
+//Axios
+import { Api } from "../../connection/axios";
+import { AxiosError } from "axios";
 
 //Validação
 import { SignUpValidation } from "../../../global/validationForm";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, } from 'react-hook-form';
 
 // Components
 import { TouchButton } from "../../components/Touch-Button";
@@ -19,12 +26,15 @@ import { ModalComponent } from "../../components/Modal-Component";
 import { LoginButtonSubmit, ContainerLogin, LoginForm, SignUpText, TouchLogin } from "./style";
 import { Themes } from "../../../global/theme";
 
-//Imagens
-import AsclepiusLogo from "../../../images/logo-color-cropped.png";
-
+//Types
+import { ModalType } from "../../../utils/types/typeModal";
 
 export const ScreenSignUp = () => {
+    const { signIn } = useAuth(); //Importando a função de autenticação
+
+    const [loading, setLoading] = useState<boolean>(false);
     const [modalVisible, setModalVisible] = useState(false);
+    const [modalType, setModalType] = useState<ModalType>('autenticadedSucessfull'); // Estado para o tipo do modal
 
     //Constantes para controle do modal
     const handleOpenModal = () => setModalVisible(true); //Função para abrir o modal
@@ -37,31 +47,50 @@ export const ScreenSignUp = () => {
     const [currentLocation, setCurrentLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 
     //Validação do formulário
-    const { control, handleSubmit, formState: { errors } } = useForm({
+    const { control, handleSubmit, formState: { errors }, setError } = useForm({
         defaultValues: {
-            nameUser:  '',
-            emailUser:  '',
-            phoneUser:  '',
+            nameUser: '',
+            emailUser: '',
+            phoneUser: '',
             passwordUser: '',
         },
         resolver: yupResolver(SignUpValidation),
     });
 
     //Submisao do formulário
-    const onSubmit = (data: any) => {
-        Alert.alert(
-            'Formulário enviado com sucesso!',
-            JSON.stringify(data),
-            [
-                {
-                    text: 'OK',
-                    onPress: () => {
-                        handleOpenModal();
-                    }
-                }
-            ]
-        );
-        console.log(currentLocation?.latitude, currentLocation?.longitude);
+    const onSubmit = async (data: any) => {
+        if (!currentLocation) {
+            Alert.alert("Erro", "Não foi possível obter a localização");
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const response = await Api.post('/user/', {
+                name: data.nameUser,
+                email: data.emailUser,
+                telefone: data.phoneUser,
+                password: data.passwordUser,
+                latitude: currentLocation.latitude,
+                longitude: currentLocation.longitude,
+            });
+
+            if (response.status === 201) {
+                await signIn({
+                    userEmail: data.emailUser,
+                    userPassword: data.passwordUser,
+                });
+
+                setModalType("autenticadedSucessfull");
+                handleOpenModal();
+            } else {
+                Alert.alert('Erro', 'Não foi possível criar a conta. Tente novamente.');
+            }
+        } catch (error) {
+            handleSignUpErrors(error);   
+        } finally {
+            setLoading(false);
+        }
     };
 
     //Pegar a latitude e longitude
@@ -85,10 +114,44 @@ export const ScreenSignUp = () => {
         })();
     }, [currentLocation?.latitude, currentLocation?.longitude]);
 
+
+    //Função de erros
+    const handleSignUpErrors = (error: unknown) => {
+        if (error instanceof AxiosError) {
+            //Possíveis erros do backend
+            const status = error.response?.status;
+            const backendErrors = error.response?.data;
+
+            if (status === 409 && backendErrors) {
+                let errorMessage = String(backendErrors.error);
+                
+                //Há somente dois erros do backend que a validação não consegue resolver por si só
+                if (errorMessage.includes("e-mail")) {
+                    setError("emailUser", { //Validação de e-mails duplicados
+                        message: "E-mail já existente"
+                    });
+                }else{
+                    setError("phoneUser", { //Validação de telefone duplicados
+                        message: "Telefone já existente"
+                    });
+                }
+            
+            } else {
+                Alert.alert("Erro", "Ocorreu um erro ao criar a conta. Tente novamente.");
+            }
+        } else {
+            console.error("Erro inesperado:", (error as Error).message);
+            Alert.alert("Erro", "Ocorreu um erro inesperado. Tente novamente mais tarde.");
+        }
+    }
+
     return (
         <ContainerLogin>
+
+            {loading && <ActivityIndicator size="large" color={`${Themes.colors.greenDark}`} />}
+
             <LoginForm>
-            <Controller
+                <Controller
                     control={control}
                     name="nameUser"
                     render={({ field: { onChange, onBlur, value } }) => (
@@ -166,7 +229,7 @@ export const ScreenSignUp = () => {
             </SignUpText>
             {/* Modal para opções */}
             <ModalComponent visible={modalVisible} onClose={handleCloseModal} typeModal="autenticadedSucessfull" />
-        
+
         </ContainerLogin>
     );
 }

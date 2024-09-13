@@ -1,5 +1,5 @@
 //Importações
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
@@ -15,6 +15,9 @@ import userUndefined from "../../../images/user-undefined.jpg";
 import { styles } from "./style";
 import { Themes } from "../../../global/theme";
 
+//Api
+import { portApi } from "../../connection/axios";
+
 //Props
 interface props {
     userName?: string,
@@ -26,6 +29,22 @@ interface props {
 export const DetailsProfile: React.FC<props> = ({ userEmail, userName, userPhone, userImage }) => {
     //Const de navigação
     const navigation = useNavigation();
+    const [imageProfile, setImageProfile] = useState<string | undefined>("Image not registered");
+
+    //Função para listar a imagem de perfil
+    const handleSelectImmageProfile = () => {
+        if (userImage && userImage !== "Image not registered") {
+            return `${portApi}/images/${userImage}`; //Mudar isso caso mudar o ip do axios
+        }else {
+            return undefined;
+        }
+    }
+
+    //O UseEffect será chamado sempre que a imagem mmudar
+    useEffect(()=> {
+        const imageURI = handleSelectImmageProfile();
+        setImageProfile(imageURI);
+    }, [userImage])
     
     return (
         <View style={styles.container}>
@@ -37,7 +56,7 @@ export const DetailsProfile: React.FC<props> = ({ userEmail, userName, userPhone
             >
                 <View style={styles.circleDetails}>
                     <Image
-                        source={userImage ? userImage : userUndefined}
+                        source={userImage && userImage !== "Image not registered" ? { uri: imageProfile } : userUndefined}
                         style={styles.circleImage}
                     />
                 </View>
