@@ -58,7 +58,15 @@ export const ScreenDetailsEvent = () => {
 
   //Formatação da data
   const formatDate = (dateString: string): string => {
-    const [year, month, day] = dateString.split("-");
+    // Cria uma instância de Date a partir da string ISO
+    const date = new Date(dateString);
+    
+    // Obtém o dia, mês e ano
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Mês é 0 indexado, por isso adicionamos 1
+    const year = date.getUTCFullYear();
+
+    // Retorna no formato "DD/MM/YYYY"
     return `${day}/${month}/${year}`;
   };
 

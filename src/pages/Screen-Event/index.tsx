@@ -29,6 +29,9 @@ export const ScreenEvent = () => {
   const [noRecords, setNoRecords] = useState<boolean>(false);
 
   const [dateEvent, setDateEvent] = useState<string[]>([]);
+  const [selectedMonth, setSelectedMonth] = useState<string>(
+    new Date().toISOString().slice(0, 7) //Settando com a data atual
+  );
 
   const searchEvent = (event: string) => {
     setSearchQuery(event.toLowerCase());
@@ -55,26 +58,33 @@ export const ScreenEvent = () => {
     }
   }, [eventData]);
 
-  //Effect de busca de eventos
+  //Effect de busca de eventos (Filtra por mês e por pesquisa)
   useEffect(() => {
     setLoading(true);
     setNoRecords(false);
 
     setTimeout(() => {
-      if (searchQuery === "") {
-        setEvent(allEvent);
-        setNoRecords(false);
-      } else {
-        const searchEvent = allEvent.filter((event) =>
-          event.local.toLowerCase().includes(searchQuery)
-        );
+      // Filtrando por busca ou por mês
+      let filteredEvents = allEvent;
+      console.log(selectedMonth);
 
-        setEvent(searchEvent);
-        setNoRecords(searchEvent.length === 0);
-      }
+      // Se há uma pesquisa ativa, ignoramos o filtro de mês
+    if (searchQuery !== "") {
+      filteredEvents = allEvent.filter((event) =>
+        event.local.toLowerCase().includes(searchQuery)
+      );
+    } else if (selectedMonth !== "") {
+      // Se não há pesquisa, aplicamos o filtro por mês
+      filteredEvents = allEvent.filter((event) =>
+        event.date.startsWith(selectedMonth)
+      );
+    }
+
+      setEvent(filteredEvents);
+      setNoRecords(filteredEvents.length === 0);
       setLoading(false);
     }, 1000);
-  }, [searchQuery, allEvent]);
+  }, [searchQuery, allEvent, selectedMonth]);
 
   return (
     <ScrollView>
@@ -89,7 +99,10 @@ export const ScreenEvent = () => {
           placeholder="Pesquisar evento..."
           changeSubmit={searchEvent}
         />
-        <CalendarComponent date={dateEvent} />
+        <CalendarComponent 
+          date={dateEvent} 
+          onMonthChange={(month: string) => setSelectedMonth(month)}
+        />
 
         {loading ? (
           <ActivityIndicator
