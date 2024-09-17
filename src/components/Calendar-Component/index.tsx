@@ -1,13 +1,14 @@
 import React from "react";
 import { View } from "react-native";
-import { Calendar } from "react-native-calendars";
+import { Calendar, DateData } from "react-native-calendars";
 import styles from "./style";
 
 type Props = {
   date?: string[]; // Array de datas no formato 'YYYY-MM-DD'
+  onMonthChange ?: (month: string) => void; //Detectar mudança do mês
 };
 
-const CalendarComponent = ({ date }: Props) => {
+const CalendarComponent = ({ date, onMonthChange }: Props) => {
   // Filtra as datas pelo mês atual
   const filterDatesByMonth = (dates: string[] | undefined) => {
     if (!dates) return {};
@@ -51,6 +52,7 @@ const CalendarComponent = ({ date }: Props) => {
         style={styles.calendar}
         markingType="custom"
         markedDates={filterDatesByMonth(date)}
+        onMonthChange={(month: DateData) => onMonthChange?.(month.dateString.slice(0, 7))} // Captura o mês 'YYYY-MM'
       />
     </View>
   );

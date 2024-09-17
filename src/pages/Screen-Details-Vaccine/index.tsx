@@ -1,10 +1,11 @@
 //Imports
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, ScrollView, Text, View, RefreshControl } from "react-native";
 import { useRoute } from "@react-navigation/native";
 
 //Types
 import { infoVaccine } from "../../../utils/types/typeInfoVaccine";
+import { Event } from "../../../utils/types/typeEvent";
 
 //Styles
 import styles from "./style";
@@ -27,6 +28,9 @@ export const ScreenDetailsVaccine = () => {
   const [arrayInfo, setArrayInfo] = useState<infoVaccine | undefined>();
   const [loading, setLoading] = useState<boolean>(false);
   const [noRecords, setNoRecords] = useState<boolean>(false);
+  const [eventsVaccine, setEventsVaccine] = useState<Event[] | undefined>();
+
+  const [refreshing, setRefreshing] = useState<boolean>(false); //Função de refresh
 
   useEffect(() => {
     const fetchVaccineIdApi = async () => {
@@ -36,20 +40,45 @@ export const ScreenDetailsVaccine = () => {
 
         setArrayInfo(response.data);
         setNoRecords(response.data.length === 0);
+        setEventsVaccine(response.data.vaccinationCalendar);
 
       } catch (error) {
         console.log("Error ao procurar a vacina:", error);
         setNoRecords(true);
-      }finally{
+      } finally {
         setLoading(false);
       }
     }
 
     fetchVaccineIdApi();
-  }, [idVaccine])
+  }, [idVaccine]);
+
+  //Função de refresh
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      const response = await Api.get(`/vaccine/${idVaccine}`);
+
+      // Atualizando as informações
+      setArrayInfo(response.data);
+      setNoRecords(response.data.length === 0);
+      setEventsVaccine(response.data.vaccinationCalendar);
+    } catch (error) {
+      console.log("Erro ao atualizar a vacina:", error);
+      setNoRecords(true);
+    } finally {
+      setRefreshing(false); // Finaliza o "refresh"
+    }
+  };
 
   return (
-    <ScrollView>
+    <ScrollView  refreshControl={
+      <RefreshControl
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        colors={[`${Themes.colors.greenDark}`]} 
+      />
+    }>
       <View style={styles.container}>
         {loading ? (
           <ActivityIndicator
@@ -85,7 +114,7 @@ export const ScreenDetailsVaccine = () => {
               Eventos de Vacinação
             </Text>
             <View style={styles.viewList}>
-              {noRecords ? (
+              {eventsVaccine?.length === 0 ? (
                 <NoRecordView title="Não Há Eventos Cadastrados" />
               ) : (
                 arrayInfo.vaccinationCalendar?.map((content, index) => (

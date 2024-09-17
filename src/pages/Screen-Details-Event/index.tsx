@@ -1,6 +1,6 @@
 //Imports
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, ScrollView, View } from "react-native";
+import { ActivityIndicator, Alert, ScrollView, View, RefreshControl } from "react-native";
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -31,7 +31,7 @@ import { useUser } from "../../context/UserContext";
 
 export const ScreenDetailsEvent = () => {
   //Contextos
-  const { eventData, loadingEvent } = userEvent();
+  const { eventData, loadingEvent, loadEventData } = userEvent();
   const { token, checkTokenValidity } = useAuth(); //Token do usuário
   const { userData, updateUser } = useUser();
 
@@ -48,6 +48,8 @@ export const ScreenDetailsEvent = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [noRecords, setNoRecords] = useState<boolean>(false);
 
+  const [refreshing, setRefreshing] = useState<boolean>(false); //Função de refresh
+  
   //Contorladores do modal
   const [modalVisible, setModalVisible] = useState(false);
   const [modalType, setModalType] = useState<ModalType>("sucessfulRequest"); // Estado para o tipo do modal
@@ -58,7 +60,15 @@ export const ScreenDetailsEvent = () => {
 
   //Formatação da data
   const formatDate = (dateString: string): string => {
-    const [year, month, day] = dateString.split("-");
+    // Cria uma instância de Date a partir da string ISO
+    const date = new Date(dateString);
+    
+    // Obtém o dia, mês e ano
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Mês é 0 indexado, por isso adicionamos 1
+    const year = date.getUTCFullYear();
+
+    // Retorna no formato "DD/MM/YYYY"
     return `${day}/${month}/${year}`;
   };
 
@@ -155,8 +165,21 @@ export const ScreenDetailsEvent = () => {
     }
   };
 
+   // Função para recarregar os dados no pull-to-refresh
+   const onRefresh = async () => {
+    setRefreshing(true);
+    await loadEventData(); // Recarrega os dados de eventos
+    setRefreshing(false);
+  };
+
   return (
-    <ScrollView>
+    <ScrollView refreshControl={
+      <RefreshControl
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        colors={[`${Themes.colors.greenDark}`]} 
+      />
+    }>
       <View style={styles.container}>
         {loadingEvent ? (
           <ActivityIndicator
