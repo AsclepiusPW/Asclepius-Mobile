@@ -1,6 +1,6 @@
 // Importações
 import React, { useEffect, useState } from "react";
-import { ScrollView, View, ActivityIndicator, Text  } from "react-native";
+import { ScrollView, View, ActivityIndicator, Text, RefreshControl } from "react-native";
 
 // Componentes
 import { HeaderApresentation } from "../../components/Header-Apresentation";
@@ -26,6 +26,8 @@ export const ScreenVaccinationRegisters = () => {
     const [profileImage, setProfileImage] = useState<string | null>(null);
     const [noRecords, setNoRecords] = useState<boolean>(false);
 
+    const [refreshing, setRefreshing] = useState<boolean>(false); //Função de refresh
+
     // Função de busca de registro de vacinação
     const searchVaccinationRegister = (vaccine: string) => {
         setSearchQuery(vaccine.toLowerCase());
@@ -50,7 +52,7 @@ export const ScreenVaccinationRegisters = () => {
 
             if (userData && userData.image !== "Image not registered") {
                 const urlImage = handleImageProfileURI(userData.image); //Capturando a imagem
-    
+
                 setProfileImage(userData.image ? urlImage : "");
             }
         }
@@ -59,26 +61,39 @@ export const ScreenVaccinationRegisters = () => {
     //Função para pesquisar nas vacinações do usuário
     useEffect(() => {
         setIsLoading(true);
-    
+
         // Filtrar registros de vacinação com base na pesquisa
         const filteredRecords = searchQuery
             ? userData?.vaccination?.filter((register) =>
                 register.vaccine.name?.toLowerCase().includes(searchQuery)
             ) || []
             : userData?.vaccination || [];
-    
+
         // Atualizar estado com registros filtrados
         setVaccinationRegister(filteredRecords);
-    
+
         // Atualizar estado de noRecords
         setNoRecords(filteredRecords.length === 0);
-    
+
         // Parar carregamento
         setIsLoading(false);
     }, [searchQuery, userData]);
 
+    // Função para recarregar os dados no pull-to-refresh
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await loadDataUser(); // Recarrega os dados de eventos
+        setRefreshing(false);
+    };
+
     return (
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[`${Themes.colors.greenDark}`]} 
+            />
+          }>
             <ContainerVaccinationRegister>
                 <VaccinationRegisterHeader>
                     <HeaderApresentation
@@ -100,7 +115,7 @@ export const ScreenVaccinationRegisters = () => {
                 ) : (
                     <VaccinationRegisterList>
                         {noRecords ? (
-                            <NoRecordView title="Nenhum registro encontrado"/>
+                            <NoRecordView title="Nenhum registro encontrado" />
                         ) : (
                             vaccinationRegister.map((content, index) => (
                                 <RegisterVaccination
