@@ -1,6 +1,6 @@
 //Importações
 import React, { useState, useEffect } from "react";
-import { ScrollView, View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
+import { ScrollView, View, Text, ActivityIndicator, TouchableOpacity, RefreshControl } from "react-native";
 import { getDistance } from 'geolib';
 
 //Componentes
@@ -26,6 +26,8 @@ export const ScreenProfile = () => {
 
     const [loading, setLoading] = useState<boolean>(false);
     const [nearbyEvents, setNearbyEvents] = useState<Event[]>([]); //Eventos próximos do usuário
+
+    const [refreshing, setRefreshing] = useState<boolean>(false); //Função de refresh
 
     //Pegando informações do usuário do banco de dados
     useEffect(() => {
@@ -56,11 +58,24 @@ export const ScreenProfile = () => {
         }
     }, [userData, eventData]);
 
+    // Função de recarregamento (pull-to-refresh)
+    const onRefresh = async () => {
+        setRefreshing(true); // Ativa o indicador de refresh
+        await loadDataUser(); // Recarrega os dados do usuário
+        setRefreshing(false); // Desativa o indicador de refresh após o carregamento
+    };
+
     return (
-        <ScrollView>
+        <ScrollView refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[`${Themes.colors.greenDark}`]} 
+            />
+          }>
             {
                 loading ? (
-                    <UpdatingComponent/>
+                    <UpdatingComponent />
                 ) : (
                     <ContainerProfile>
 
@@ -78,7 +93,7 @@ export const ScreenProfile = () => {
                         <ContainerMap>
                             <ViewTitle>
                                 <Text style={styles.detailsTitle}>Sua localização</Text>
-                            
+
                                 <TouchableOpacity>
                                     <Icon name="edit" size={20} color={`${Themes.colors.black}`} />
                                 </TouchableOpacity>
@@ -94,10 +109,10 @@ export const ScreenProfile = () => {
                             </ViewMap>
                         </ContainerMap>
 
-                        { 
+                        {
                             userData?.requestReservation && userData?.requestReservation?.length > 0 && (
-                                <VaccinationRequestComponent requestVaccination={userData.requestReservation}/>
-                            ) 
+                                <VaccinationRequestComponent requestVaccination={userData.requestReservation} />
+                            )
                         }
                     </ContainerProfile>
                 )}

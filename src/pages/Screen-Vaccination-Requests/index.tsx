@@ -1,6 +1,6 @@
 //Importações
 import { useEffect, useState } from "react";
-import { ScrollView, View, Text, TouchableOpacity, ActivityIndicator, Animated } from "react-native";
+import { ScrollView, View, Text, TouchableOpacity, ActivityIndicator, Animated, RefreshControl } from "react-native";
 import React from "react";
 
 //Componentes
@@ -31,7 +31,9 @@ export const ScreenVaccinationRequest = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [noRecords, setNoRecords] = useState<boolean>(false);
 
-    const [notificationVisible, setNotificationVisible] = useState<boolean>(false); 
+    const [refreshing, setRefreshing] = useState<boolean>(false); //Função de refresh
+  
+    const [notificationVisible, setNotificationVisible] = useState<boolean>(false);
 
     useEffect(() => {
         //Pegando os dados do usuário
@@ -95,8 +97,21 @@ export const ScreenVaccinationRequest = () => {
         }, 1000); // Simula um tempo de carregamento
     }, [searchQuery, visibleEvents, userData]);
 
+    // Função de recarregamento (pull-to-refresh)
+    const onRefresh = async () => {
+        setRefreshing(true); // Ativa o indicador de refresh
+        await loadDataUser(); // Recarrega os dados do usuário
+        setRefreshing(false); // Desativa o indicador de refresh após o carregamento
+    };
+
     return (
-        <ScrollView>
+        <ScrollView refreshControl={
+            <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={[`${Themes.colors.greenDark}`]}
+            />
+        }>
             <ContainerVaccinationRequest>
                 <VaccinationRequestHeader>
                     <HeaderApresentation
@@ -144,7 +159,7 @@ export const ScreenVaccinationRequest = () => {
                     </VaccinationRequestList>
                 )}
 
-            { notificationVisible && <NotificationEvent text="Solicitação removida"/>}
+                {notificationVisible && <NotificationEvent text="Solicitação removida" />}
             </ContainerVaccinationRequest>
         </ScrollView>
     )

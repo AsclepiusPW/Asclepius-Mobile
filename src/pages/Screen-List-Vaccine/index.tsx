@@ -1,4 +1,4 @@
-import { ActivityIndicator, ScrollView, View } from "react-native";
+import { ActivityIndicator, ScrollView, View, RefreshControl } from "react-native";
 import { HeaderApresentation } from "../../components/Header-Apresentation";
 import React from "react";
 import styles from "./style";
@@ -17,7 +17,8 @@ export const ScreenListVaccine = () => { //Refatorando importação
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [noRecords, setNoRecords] = useState<boolean>(false);
-
+  const [refreshing, setRefreshing] = useState<boolean>(false); //Função de refresh
+  
   const searchInfoVaccines = (query: string) => {
     setSearchQuery(query.toLowerCase());
   };
@@ -61,8 +62,32 @@ export const ScreenListVaccine = () => { //Refatorando importação
     }
   }, [searchQuery, allVaccines]);
 
+  //Função de refresh
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      const response = await Api.get("/vaccine/");
+  
+      // Atualizando as informações
+      setInfoVaccines(response.data);
+      setAllVaccines(response.data);
+      setNoRecords(response.data.length === 0);
+    } catch (error) {
+      console.log("Erro ao atualizar as vacinas:", error);
+      setNoRecords(true);
+    } finally {
+      setRefreshing(false); // Finaliza o "refresh"
+    }
+  };
+
   return (
-    <ScrollView>
+    <ScrollView refreshControl={
+      <RefreshControl
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        colors={[`${Themes.colors.greenDark}`]} 
+      />
+    }>
       <View style={styles.container}>
         <View style={styles.headerApresentation}>
           <HeaderApresentation
