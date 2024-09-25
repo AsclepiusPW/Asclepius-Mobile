@@ -23,7 +23,7 @@ type eventType = "Reservation approved" | "Reservation denied" | "Reservation re
 import { useUser } from "../../context/UserContext";
 
 export const ScreenVaccinationRequest = () => {
-    const { userData, loadDataUser } = useUser();
+    const { userData, loadDataUser, refreshingDataUser } = useUser();
 
     const [visibleEvents, setVisibleEvents] = useState<eventType>("Reservation approved");
     const [vaccinationRequest, setVaccinationRequest] = useState<VaccinationRequest[] | null>(null);
@@ -100,7 +100,7 @@ export const ScreenVaccinationRequest = () => {
     // Função de recarregamento (pull-to-refresh)
     const onRefresh = async () => {
         setRefreshing(true); // Ativa o indicador de refresh
-        await loadDataUser(); // Recarrega os dados do usuário
+        await refreshingDataUser(); // Recarrega os dados do usuário
         setRefreshing(false); // Desativa o indicador de refresh após o carregamento
     };
 

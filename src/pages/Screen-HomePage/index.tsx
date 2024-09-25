@@ -16,14 +16,14 @@ import { Themes } from "../../../global/theme";
 import { useUser } from "../../context/UserContext";
 
 export const HomePage = () => {
-    const { userData, loadDataUser } = useUser();
+    const { userData, refreshingDataUser } = useUser();
 
     const [refreshing, setRefreshing] = useState<boolean>(false); //Função de refresh
 
     // Função de recarregamento (pull-to-refresh)
     const onRefresh = async () => {
         setRefreshing(true); // Ativa o indicador de refresh
-        await loadDataUser(); // Recarrega os dados do usuário
+        await refreshingDataUser(); // Recarrega os dados do usuário
         setRefreshing(false); // Desativa o indicador de refresh após o carregamento
     };
 

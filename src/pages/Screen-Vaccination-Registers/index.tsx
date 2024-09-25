@@ -19,7 +19,7 @@ import { Themes } from "../../../global/theme";
 import { useUser } from "../../context/UserContext";
 
 export const ScreenVaccinationRegisters = () => {
-    const { userData, loadDataUser } = useUser();
+    const { userData, loadDataUser, refreshingDataUser } = useUser();
     const [vaccinationRegister, setVaccinationRegister] = useState<Vaccination[]>([]);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -82,7 +82,7 @@ export const ScreenVaccinationRegisters = () => {
     // Função para recarregar os dados no pull-to-refresh
     const onRefresh = async () => {
         setRefreshing(true);
-        await loadDataUser(); // Recarrega os dados de eventos
+        await refreshingDataUser(); // Recarrega os dados de eventos
         setRefreshing(false);
     };
 

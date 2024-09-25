@@ -17,6 +17,7 @@ import { User } from "../../utils/types/typeUser";
 interface UserContextData {
     userData: User | null;
     loadDataUser: () => Promise<void>;
+    refreshingDataUser: () => Promise<void>;
     updateUser: (updateUser: User) => void;
 }
 
@@ -65,6 +66,26 @@ export const UserProvider:React.FC<UserContextProps> = ({children}) => {
         await AsyncStorage.setItem("@user_data", JSON.stringify(updateUser));
     }
 
+    //Função de refreshing
+    const refreshingDataUser = async() => {
+        try {
+            if (token){
+                //Busca as informações e atualiza as mesmas
+                const response = await Api.get("/user/profile", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                //Salvando as informações
+                setUserData(response.data);
+                await AsyncStorage.setItem("@user_data", JSON.stringify(response.data));
+            }
+        } catch (error) {
+            handleUserError(error);
+        }
+    }
+
     //Coletar dados automáticamente ao iniciar o APP, se o token existir
     useEffect(()=> {
         if (token) {
@@ -73,7 +94,7 @@ export const UserProvider:React.FC<UserContextProps> = ({children}) => {
     }, [token]) //A função somente será chamada quando token estiver disponível
 
     return(
-        <UserContext.Provider value={{userData, loadDataUser, updateUser}}>
+        <UserContext.Provider value={{userData, loadDataUser, updateUser, refreshingDataUser}}>
             {children}
         </UserContext.Provider>
     )

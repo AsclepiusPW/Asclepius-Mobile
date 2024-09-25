@@ -21,7 +21,7 @@ import { Event } from "../../../utils/types/typeEvent";
 import { Themes } from "../../../global/theme";
 
 export const ScreenProfile = () => {
-    const { userData, loadDataUser } = useUser();
+    const { userData, loadDataUser, refreshingDataUser } = useUser();
     const { eventData } = userEvent(); // Adicionando contexto de eventos
 
     const [loading, setLoading] = useState<boolean>(false);
@@ -61,7 +61,7 @@ export const ScreenProfile = () => {
     // Função de recarregamento (pull-to-refresh)
     const onRefresh = async () => {
         setRefreshing(true); // Ativa o indicador de refresh
-        await loadDataUser(); // Recarrega os dados do usuário
+        await refreshingDataUser(); // Recarrega os dados do usuário
         setRefreshing(false); // Desativa o indicador de refresh após o carregamento
     };
 
